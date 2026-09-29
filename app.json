@@ -1,0 +1,48 @@
+{
+  "pages": [
+    "pages/map/map",
+    "pages/list/list",
+    "pages/about/about",
+    "pages/detail/detail"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#8C1F28",
+    "navigationBarTitleText": "清风循迹 · 廉洁文化地图",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F5F1E8"
+  },
+  "tabBar": {
+    "color": "#8A8A8A",
+    "selectedColor": "#8C1F28",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/map/map",
+        "text": "廉图"
+      },
+      {
+        "pagePath": "pages/list/list",
+        "text": "廉迹"
+      },
+      {
+        "pagePath": "pages/about/about",
+        "text": "循迹"
+      }
+    ]
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于定位您所在位置，就近推荐廉洁文化场馆并计算距离"
+    }
+  },
+  "requiredPrivateInfos": [
+    "getLocation",
+    "chooseLocation",
+    "openLocation"
+  ],
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

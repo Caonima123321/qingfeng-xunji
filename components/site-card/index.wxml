@@ -1,0 +1,19 @@
+<!--- 点位卡片组件：地图页底部面板与列表页共用 --->
+<view class="sc" bindtap="onTap">
+  <view class="sc__bar" style="background: {{color}}"></view>
+  <view class="sc__body">
+    <view class="sc__head">
+      <text class="sc__name ellipsis">{{site.name}}</text>
+      <text wx:if="{{visited}}" class="sc__done">已循迹</text>
+    </view>
+    <view class="sc__meta muted ellipsis">
+      <text>{{site.city}}</text>
+      <text wx:if="{{site.district}}"> · {{site.district}}</text>
+      <text wx:if="{{distText}}"> · 距您 {{distText}}</text>
+    </view>
+    <view class="sc__tags">
+      <text wx:for="{{site.categories}}" wx:key="*this" class="tag" style="color:{{color}};border-color:{{color}}33;background:{{color}}12">{{item}}</text>
+    </view>
+    <view class="sc__sum ellipsis-2">{{site.summary}}</view>
+  </view>
+</view>

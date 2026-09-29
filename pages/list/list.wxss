@@ -1,0 +1,199 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #F5F1E8;
+}
+
+/* ---------- 搜索区 ---------- */
+.searchwrap {
+  padding: 20rpx 24rpx 10rpx;
+  background: #fff;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  height: 76rpx;
+  padding: 0 24rpx;
+  background: #F7F4ED;
+  border-radius: 999rpx;
+}
+
+.search__icon {
+  font-size: 26rpx;
+  margin-right: 12rpx;
+}
+
+.search__input {
+  flex: 1;
+  min-width: 0;
+  font-size: 27rpx;
+  color: #2B2B2B;
+}
+
+.search__ph {
+  color: #A9A9A9;
+  font-size: 25rpx;
+}
+
+.search__clear {
+  padding: 0 8rpx;
+  color: #A9A9A9;
+  font-size: 26rpx;
+}
+
+.chips {
+  margin-top: 18rpx;
+  height: 66rpx;
+  white-space: nowrap;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  height: 56rpx;
+  padding: 0 22rpx;
+  margin-right: 16rpx;
+  background: #fff;
+  border: 1rpx solid #EAE3D6;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  color: #5A5A5A;
+}
+
+.chip--on {
+  color: #fff;
+  background: #8C1F28;
+  border-color: #8C1F28;
+}
+
+.chip__n {
+  margin-left: 8rpx;
+  font-size: 20rpx;
+  opacity: 0.75;
+}
+
+/* ---------- 快捷视图 ---------- */
+.tabs {
+  display: flex;
+  padding: 16rpx 24rpx;
+  background: #fff;
+  border-top: 1rpx solid #F2EEE4;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 12rpx 0;
+  font-size: 26rpx;
+  color: #5A5A5A;
+  border-radius: 12rpx;
+}
+
+.tab--on {
+  color: #8C1F28;
+  background: #F7EDEC;
+  font-weight: 600;
+}
+
+/* ---------- 列表 ---------- */
+.body {
+  flex: 1;
+  min-height: 0;
+  padding: 0 24rpx;
+  box-sizing: border-box;
+}
+
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 20rpx 0 4rpx;
+  padding: 16rpx 22rpx;
+  background: #FBF5E4;
+  border: 1rpx solid #F0E3C2;
+  border-radius: 14rpx;
+  font-size: 23rpx;
+  color: #8A6D1B;
+}
+
+.banner__off {
+  color: #8C1F28;
+}
+
+.grouphead {
+  display: flex;
+  align-items: baseline;
+  margin: 30rpx 4rpx 16rpx;
+}
+
+.grouphead__city {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #2B2B2B;
+}
+
+.grouphead__n {
+  margin-left: 14rpx;
+  font-size: 22rpx;
+  color: #8A8A8A;
+}
+
+.grouphead__loc {
+  margin-left: auto;
+  font-size: 22rpx;
+  color: #B8860B;
+}
+
+.item {
+  margin-bottom: 18rpx;
+}
+
+.empty {
+  padding: 140rpx 40rpx;
+  text-align: center;
+}
+
+.empty__t {
+  display: block;
+  font-size: 30rpx;
+  color: #2B2B2B;
+}
+
+.empty__d {
+  display: block;
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  color: #8A8A8A;
+}
+
+.empty__btn {
+  display: inline-block;
+  margin-top: 30rpx;
+  padding: 16rpx 44rpx;
+  border-radius: 999rpx;
+  background: #8C1F28;
+  color: #fff;
+  font-size: 26rpx;
+}
+
+/* ---------- 定位按钮 ---------- */
+.locate {
+  position: fixed;
+  right: 32rpx;
+  bottom: calc(48rpx + env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  padding: 18rpx 28rpx;
+  background: #8C1F28;
+  color: #fff;
+  font-size: 25rpx;
+  border-radius: 999rpx;
+  box-shadow: 0 8rpx 24rpx rgba(140, 31, 40, 0.32);
+}
+
+.locate__icon {
+  margin-right: 10rpx;
+}

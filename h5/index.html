@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#8C1F28" />
+  <title>清风循迹 · 四川省廉洁文化地图</title>
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
+  <link rel="stylesheet" href="css/style.css?v=7" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- ============ 顶部沉浸式：状态栏 + 导航栏 ============ -->
+    <div class="topbar-overlay">
+      <div class="statusbar">
+        <span class="sb-time" id="sb-time">--:--</span>
+        <span class="sb-right">
+          <span class="sb-signal"><i></i><i></i><i></i><i></i></span>
+          <span class="sb-net">5G</span>
+          <span class="sb-battery">
+            <span class="sb-batt-shell"><span class="sb-batt-fill" id="sb-batt-fill"></span></span>
+            <span class="sb-batt-nub"></span>
+          </span>
+          <span class="sb-batt-pct" id="sb-batt-pct">100%</span>
+        </span>
+      </div>
+      <div class="navbar">
+        <button class="nav-back" id="nav-back" hidden>‹</button>
+        <span class="nav-title" id="nav-title">四川省 · 廉洁文化地图</span>
+      </div>
+    </div>
+
+    <!-- ============ 内容区 ============ -->
+    <main class="content">
+
+      <!-- 地图视图 -->
+      <section id="view-map" class="view is-active">
+        <div id="map"></div>
+
+        <div class="map-top">
+          <button class="searchbox" id="go-search">🔍 搜索场馆 / 市州 / 廉洁要素</button>
+          <div class="fabs">
+            <button class="fab" id="btn-locate"><span class="fab-ic">◎</span><span class="fab-tx">定位</span></button>
+            <button class="fab fab-home" id="btn-home"><span class="fab-ic">🏠</span><span class="fab-tx">家乡</span></button>
+          </div>
+        </div>
+
+        <div class="chips" id="chips"></div>
+        <button class="legend-toggle" id="btn-legend"><span id="legend-label">要素图例 ▾</span></button>
+        <div class="legend" id="legend" hidden></div>
+
+        <div class="sheet" id="sheet">
+          <div class="sheet-head" id="sheet-toggle">
+            <span class="sheet-title" id="sheet-title">全省廉洁文化点位</span>
+            <span class="sheet-count" id="sheet-count"></span>
+            <span class="sheet-chevron" id="sheet-chevron">收起 ▾</span>
+          </div>
+          <div class="sheet-list" id="sheet-list"></div>
+        </div>
+
+        <!-- 市州选择 -->
+        <div class="modal-mask" id="city-mask" hidden></div>
+        <div class="city-panel" id="city-panel" hidden>
+          <div class="city-head">
+            <span class="city-title">按市州浏览</span>
+            <button class="city-close" id="city-close">✕</button>
+          </div>
+          <div class="city-grid" id="city-grid"></div>
+          <button class="city-home" id="city-home"></button>
+        </div>
+      </section>
+
+      <!-- 列表视图 -->
+      <section id="view-list" class="view">
+        <div class="list-head">
+          <div class="list-search">
+            <span class="list-search-ic">🔍</span>
+            <input id="kw" type="search" placeholder="搜索场馆、市州、廉洁要素（如 朱德 / 家风 / 长征）" />
+          </div>
+          <div class="chips list-chips" id="list-chips"></div>
+          <div class="scope-tabs" id="scope-tabs">
+            <button data-scope="all" class="on">全部</button>
+            <button data-scope="home">我的家乡</button>
+            <button data-scope="visited">我的循迹</button>
+          </div>
+        </div>
+        <div class="list-body" id="list-body"></div>
+      </section>
+
+      <!-- 关于视图 -->
+      <section id="view-about" class="view">
+        <div class="about-hero">
+          <div class="about-title">清风循迹</div>
+          <div class="about-sub">廉洁文化地图 · 四川省</div>
+          <p class="about-desc">深入挖掘廉洁文化的历史纵深与时代价值，梳理省内蕴含廉洁要素的纪念场馆、教育基地，串联古今廉洁故事，为党员干部、师生群体及社会公众提供可视化、可感知、可参与的廉洁文化教育资源。</p>
+        </div>
+        <div class="about-body">
+          <div class="stat-row" id="stat-row"></div>
+          <div class="about-block" id="about-cats"></div>
+          <div class="about-block" id="about-usage"></div>
+          <div class="about-block" id="about-sources"></div>
+          <p class="about-note" id="about-note"></p>
+        </div>
+      </section>
+
+      <!-- 详情视图 -->
+      <section id="view-detail" class="view detail-view">
+        <div id="detail-body"></div>
+      </section>
+
+    </main>
+
+    <!-- ============ 底部 Tab 栏 ============ -->
+    <nav class="tabbar" id="tabbar">
+      <button data-view="map" class="on"><span class="tb-ic">🗺</span>廉图</button>
+      <button data-view="list"><span class="tb-ic">📋</span>廉迹</button>
+      <button data-view="about"><span class="tb-ic">📖</span>循迹</button>
+    </nav>
+
+  </div>
+
+  <script src="js/data.js?v=7"></script>
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="js/app.js?v=7"></script>
+</body>
+</html>

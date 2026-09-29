@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "清风循迹 · 廉洁文化地图",
+  "usingComponents": {
+    "site-card": "/components/site-card/index"
+  }
+}

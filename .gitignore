@@ -1,0 +1,14 @@
+# 依赖与运行时产物
+node_modules/
+
+# 运行时用户数据（密码加盐散列，勿提交）
+server/data/
+
+# 隧道/工具临时文件
+tools/tunnel/
+tools/cloudflared.exe
+
+# 日志与系统文件
+*.log
+.DS_Store
+Thumbs.db

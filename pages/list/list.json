@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "廉迹 · 点位总览",
+  "usingComponents": {
+    "site-card": "/components/site-card/index"
+  }
+}

@@ -1,0 +1,149 @@
+<view class="page">
+  <!-- 地图 -->
+  <map
+    id="qfmap"
+    class="map"
+    latitude="{{center.lat}}"
+    longitude="{{center.lng}}"
+    scale="{{scale}}"
+    markers="{{markers}}"
+    show-location="{{true}}"
+    enable-rotate="{{false}}"
+    enable-overlooking="{{false}}"
+    enable-satellite="{{false}}"
+    enable-zoom="{{true}}"
+    enable-scroll="{{true}}"
+    bindmarkertap="onMarkerTap"
+    bindtap="onMapTap"
+    bindregionchange="onRegionChange"
+  ></map>
+
+  <!-- 顶部：搜索 + 右侧操作 -->
+  <view class="topbar">
+    <view class="search" bindtap="goSearch">
+      <text class="search__icon">🔍</text>
+      <text class="search__ph">搜索场馆 / 市州 / 廉洁要素</text>
+    </view>
+    <view class="fab-col">
+      <view class="fab" bindtap="locateMe">
+        <text class="fab__icon">{{locating ? '…' : '◎'}}</text>
+        <text class="fab__txt">定位</text>
+      </view>
+      <view class="fab fab--home" bindtap="goHome">
+        <text class="fab__icon">🏠</text>
+        <text class="fab__txt">家乡</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 分类筛选 -->
+  <scroll-view class="chips" scroll-x show-scrollbar="{{false}}">
+    <view
+      wx:for="{{categories}}"
+      wx:key="key"
+      class="chip {{activeCategory === item.key ? 'chip--on' : ''}}"
+      style="{{activeCategory === item.key ? 'background:' + item.color + ';border-color:' + item.color : ''}}"
+      data-key="{{item.key}}"
+      bindtap="onCategoryTap"
+    >
+      <text>{{item.key}}</text>
+      <text class="chip__n">{{item.count}}</text>
+    </view>
+    <view class="chip {{cityFilter ? 'chip--on' : ''}}" bindtap="openCityPanel">
+      <text>{{cityFilter || '全部市州'}}</text>
+      <text class="chip__n">▾</text>
+    </view>
+    <view wx:if="{{activeCategory || cityFilter}}" class="chip chip--reset" bindtap="resetFilter">
+      <text>重置</text>
+    </view>
+  </scroll-view>
+
+  <!-- 底部面板 -->
+  <view class="sheet {{sheetUp ? '' : 'sheet--down'}}">
+    <view class="sheet__handle" bindtap="toggleSheet">
+      <view class="sheet__grip"></view>
+    </view>
+    <view class="sheet__head">
+      <text class="sheet__title">
+        {{activeCategory || cityFilter ? '筛选结果' : '全省廉洁文化点位'}}
+      </text>
+      <text class="sheet__count">{{filtered.length}} 处</text>
+      <text class="sheet__legend" bindtap="toggleLegend">{{legendOpen ? '收起图例' : '要素图例'}}</text>
+      <text class="sheet__tip" bindtap="goList">完整列表 ›</text>
+    </view>
+
+    <!-- 图例（内嵌于面板，避免浮层遮挡） -->
+    <view wx:if="{{legendOpen}}" class="legend">
+      <view wx:for="{{categories}}" wx:key="key" class="legend__row">
+        <view class="legend__dot" style="background:{{item.color}}"></view>
+        <view class="legend__info">
+          <text class="legend__name">{{item.key}} · {{item.count}} 处</text>
+          <text class="legend__desc">{{item.desc}}</text>
+        </view>
+      </view>
+      <view class="legend__row">
+        <view class="legend__dot" style="background:#FF6B35"></view>
+        <view class="legend__info">
+          <text class="legend__name">{{home.label}}</text>
+          <text class="legend__desc">{{home.desc}}</text>
+        </view>
+      </view>
+    </view>
+
+    <scroll-view
+      class="sheet__list"
+      scroll-y
+      scroll-into-view="{{scrollInto}}"
+      scroll-with-animation
+      show-scrollbar="{{false}}"
+      bindscroll="onListScroll"
+    >
+      <site-card
+        wx:for="{{filtered}}"
+        wx:key="id"
+        id="c-{{item.id}}"
+        class="sheet__item"
+        site="{{item}}"
+        location="{{location}}"
+        bind:tap="onCardTap"
+      ></site-card>
+      <view wx:if="{{filtered.length === 0}}" class="empty">
+        <text>当前筛选条件下暂无可展示的点位</text>
+        <text class="empty__op" bindtap="resetFilter">重置筛选条件</text>
+      </view>
+      <view class="safe-bottom"></view>
+    </scroll-view>
+  </view>
+
+  <!-- 市州选择面板 -->
+  <view wx:if="{{cityPanelOpen}}" class="mask" bindtap="closeCityPanel"></view>
+  <view class="citypanel {{cityPanelOpen ? 'citypanel--open' : ''}}">
+    <view class="citypanel__head">
+      <text class="citypanel__title">按市州浏览</text>
+      <text class="citypanel__close" bindtap="closeCityPanel">✕</text>
+    </view>
+    <scroll-view class="citypanel__body" scroll-y show-scrollbar="{{false}}">
+      <view class="citygrid">
+        <view class="citygrid__item {{cityFilter === '' ? 'citygrid__item--on' : ''}}" data-city="" bindtap="onCityTap">
+          <text class="citygrid__name">全省</text>
+          <text class="citygrid__n">{{total}} 处</text>
+        </view>
+        <view
+          wx:for="{{cityStats}}"
+          wx:key="name"
+          class="citygrid__item {{cityFilter === item.name ? 'citygrid__item--on' : ''}}"
+          data-city="{{item.name}}"
+          bindtap="onCityTap"
+        >
+          <text class="citygrid__name">{{item.short}}</text>
+          <text class="citygrid__n">{{item.count}} 处</text>
+        </view>
+      </view>
+      <view class="citypanel__home" bindtap="goHome">
+        <text class="citypanel__home-t">一键回到「{{home.label}}」</text>
+        <text class="citypanel__home-d">{{home.desc}}</text>
+      </view>
+      <view class="safe-bottom"></view>
+    </scroll-view>
+  </view>
+</view>

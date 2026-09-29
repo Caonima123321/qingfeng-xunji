@@ -1,0 +1,261 @@
+.page {
+  min-height: 100vh;
+  background: #F5F1E8;
+}
+
+/* ---------- 头图 ---------- */
+.hero {
+  padding: 44rpx 36rpx 48rpx;
+  color: #fff;
+}
+
+.hero__badges {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 20rpx;
+}
+
+.badge {
+  padding: 6rpx 18rpx;
+  margin: 0 12rpx 12rpx 0;
+  font-size: 21rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1rpx solid rgba(255, 255, 255, 0.42);
+}
+
+.badge--official {
+  background: #FFD24D;
+  border-color: #FFD24D;
+  color: #6B4A00;
+  font-weight: 600;
+}
+
+.hero__name {
+  display: block;
+  font-size: 44rpx;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: 1rpx;
+}
+
+.hero__loc {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 25rpx;
+  opacity: 0.9;
+}
+
+.hero__tags {
+  margin-top: 18rpx;
+}
+
+.hero__tag {
+  display: inline-block;
+  margin: 0 16rpx 8rpx 0;
+  font-size: 22rpx;
+  opacity: 0.88;
+}
+
+/* ---------- 操作条 ---------- */
+.actions {
+  display: flex;
+  margin: -28rpx 24rpx 0;
+  background: #fff;
+  border-radius: 20rpx;
+  box-shadow: 0 8rpx 26rpx rgba(140, 31, 40, 0.1);
+  position: relative;
+  z-index: 2;
+}
+
+.action {
+  flex: 1;
+  padding: 22rpx 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-right: 1rpx solid #F2EEE4;
+}
+
+.action:last-child {
+  border-right: none;
+}
+
+.action--on .action__icon,
+.action--on .action__txt {
+  color: #B8860B;
+}
+
+.action__icon {
+  font-size: 30rpx;
+  color: #8C1F28;
+  line-height: 1;
+}
+
+.action__txt {
+  margin-top: 10rpx;
+  font-size: 21rpx;
+  color: #5A5A5A;
+}
+
+/* ---------- 内容 ---------- */
+.content {
+  padding: 8rpx 24rpx 0;
+}
+
+.block {
+  padding: 26rpx 28rpx;
+}
+
+.block--plain {
+  padding: 6rpx 28rpx;
+}
+
+.paragraph {
+  display: block;
+  font-size: 27rpx;
+  line-height: 1.78;
+  color: #3A3A3A;
+  text-align: justify;
+}
+
+.kv {
+  display: flex;
+  margin-top: 18rpx;
+  padding-top: 18rpx;
+  border-top: 1rpx solid #F4F0E7;
+}
+
+.kv--multi {
+  margin-top: 22rpx;
+}
+
+.kv__k {
+  flex: none;
+  width: 168rpx;
+  font-size: 25rpx;
+  color: #8A8A8A;
+}
+
+.kv__v {
+  flex: 1;
+  font-size: 25rpx;
+  color: #2B2B2B;
+  line-height: 1.6;
+}
+
+/* ---------- 看点 ---------- */
+.point {
+  display: flex;
+  align-items: flex-start;
+  padding: 14rpx 0;
+}
+
+.point__no {
+  flex: none;
+  width: 40rpx;
+  height: 40rpx;
+  margin: 4rpx 18rpx 0 0;
+  border-radius: 50%;
+  background: #F7EDEC;
+  color: #8C1F28;
+  font-size: 22rpx;
+  text-align: center;
+  line-height: 40rpx;
+}
+
+.point__txt {
+  flex: 1;
+  font-size: 26rpx;
+  line-height: 1.7;
+  color: #3A3A3A;
+}
+
+/* ---------- 引文 ---------- */
+.quote {
+  margin: 26rpx 0 0;
+  padding: 30rpx 30rpx 30rpx 44rpx;
+  background: linear-gradient(135deg, #FBF5E4, #F7EDEC);
+  border-left: 8rpx solid #B8860B;
+  border-radius: 0 18rpx 18rpx 0;
+  position: relative;
+}
+
+.quote__mark {
+  position: absolute;
+  left: 12rpx;
+  top: 2rpx;
+  font-size: 60rpx;
+  color: #D9C79A;
+  line-height: 1;
+}
+
+.quote__txt {
+  font-size: 30rpx;
+  line-height: 1.75;
+  color: #6B4A00;
+  font-weight: 600;
+}
+
+/* ---------- 同市州点位 ---------- */
+.sib {
+  display: flex;
+  align-items: center;
+  padding: 22rpx 0;
+  border-bottom: 1rpx solid #F4F0E7;
+}
+
+.sib:last-child {
+  border-bottom: none;
+}
+
+.sib__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.sib__name {
+  display: block;
+  font-size: 27rpx;
+  color: #2B2B2B;
+}
+
+.sib__meta {
+  display: block;
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: #8A8A8A;
+}
+
+.sib__arrow {
+  flex: none;
+  margin-left: 16rpx;
+  font-size: 34rpx;
+  color: #C9C1B2;
+}
+
+/* ---------- 免责说明 ---------- */
+.disclaimer {
+  margin: 30rpx 4rpx 0;
+  font-size: 21rpx;
+  line-height: 1.7;
+  color: #A29A8C;
+}
+
+.notfound {
+  padding: 220rpx 60rpx;
+  text-align: center;
+}
+
+.notfound__t {
+  display: block;
+  font-size: 32rpx;
+  color: #2B2B2B;
+}
+
+.notfound__d {
+  display: block;
+  margin-top: 16rpx;
+  font-size: 25rpx;
+  color: #8A8A8A;
+}

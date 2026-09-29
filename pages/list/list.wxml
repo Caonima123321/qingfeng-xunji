@@ -1,0 +1,73 @@
+<view class="page">
+  <!-- 搜索 -->
+  <view class="searchwrap">
+    <view class="search">
+      <text class="search__icon">🔍</text>
+      <input
+        class="search__input"
+        value="{{keyword}}"
+        placeholder="搜索场馆、市州、廉洁要素（如 朱德 / 家风 / 长征）"
+        placeholder-class="search__ph"
+        confirm-type="search"
+        bindinput="onInput"
+      />
+      <text wx:if="{{keyword}}" class="search__clear" bindtap="clearKeyword">✕</text>
+    </view>
+
+    <!-- 分类 -->
+    <scroll-view class="chips" scroll-x show-scrollbar="{{false}}">
+      <view
+        class="chip {{activeCategory === item.key ? 'chip--on' : ''}}"
+        style="{{activeCategory === item.key ? 'background:' + item.color + ';border-color:' + item.color : ''}}"
+        wx:for="{{categories}}"
+        wx:key="key"
+        data-key="{{item.key}}"
+        bindtap="onCategoryTap"
+      >
+        <text>{{item.key}}</text>
+        <text class="chip__n">{{item.count}}</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 快捷视图 -->
+  <view class="tabs">
+    <view class="tab {{scope === 'all' ? 'tab--on' : ''}}" data-scope="all" bindtap="onScopeTap">全部点位 {{total}}</view>
+    <view class="tab {{scope === 'home' ? 'tab--on' : ''}}" data-scope="home" bindtap="onScopeTap">我的家乡 {{homeCount}}</view>
+    <view class="tab {{scope === 'visited' ? 'tab--on' : ''}}" data-scope="visited" bindtap="onScopeTap">我的循迹 {{visitedCount}}</view>
+  </view>
+
+  <!-- 结果 -->
+  <scroll-view class="body" scroll-y show-scrollbar="{{false}}">
+    <view wx:if="{{nearMode}}" class="banner">
+      <text>已获取您的位置，按距离由近到远排列</text>
+      <text class="banner__off" bindtap="clearLocation">取消排序</text>
+    </view>
+
+    <block wx:for="{{groups}}" wx:key="city" wx:for-item="group">
+      <view class="grouphead">
+        <text class="grouphead__city">{{group.city}}</text>
+        <text class="grouphead__n">{{group.list.length}} 处</text>
+        <text class="grouphead__loc" data-city="{{group.city}}" bindtap="flyCity">地图查看 ›</text>
+      </view>
+      <view class="groupbody">
+        <view wx:for="{{group.list}}" wx:key="id" class="item">
+          <site-card site="{{item}}" location="{{location}}" bind:tap="onCardTap"></site-card>
+        </view>
+      </view>
+    </block>
+
+    <view wx:if="{{groups.length === 0}}" class="empty">
+      <text class="empty__t">没有匹配的点位</text>
+      <text class="empty__d">试试换一个关键词，或点击下方按钮重置条件</text>
+      <view class="empty__btn" bindtap="resetAll">重置筛选</view>
+    </view>
+    <view class="safe-bottom"></view>
+  </scroll-view>
+
+  <!-- 定位入口 -->
+  <view wx:if="{{!location}}" class="locate" bindtap="locateMe">
+    <text class="locate__icon">{{locating ? '…' : '◎'}}</text>
+    <text>按距离就近推荐</text>
+  </view>
+</view>

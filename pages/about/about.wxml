@@ -1,0 +1,100 @@
+<view class="page">
+  <!-- 标题区 -->
+  <view class="hero">
+    <text class="hero__title">清风循迹</text>
+    <text class="hero__sub">廉洁文化地图 · 四川省</text>
+    <text class="hero__desc">
+      深入挖掘廉洁文化的历史纵深与时代价值，梳理省内蕴含廉洁要素的纪念场馆、教育基地，
+      串联古今廉洁故事，为党员干部、师生群体及社会公众提供可视化、可感知、可参与的廉洁文化教育资源。
+    </text>
+  </view>
+
+  <!-- 数据概览 -->
+  <view class="stats">
+    <view class="stat">
+      <text class="stat__n">{{stats.sites}}</text>
+      <text class="stat__t">廉洁点位</text>
+    </view>
+    <view class="stat">
+      <text class="stat__n">{{stats.cities}}</text>
+      <text class="stat__t">覆盖市州</text>
+    </view>
+    <view class="stat">
+      <text class="stat__n">{{stats.official}}</text>
+      <text class="stat__t">省级命名基地</text>
+    </view>
+    <view class="stat">
+      <text class="stat__n">{{stats.categories}}</text>
+      <text class="stat__t">廉洁要素类别</text>
+    </view>
+  </view>
+
+  <view class="content">
+    <!-- 分类释义 -->
+    <view class="section-title">廉洁要素五类</view>
+    <view class="card block">
+      <view wx:for="{{categories}}" wx:key="key" class="cat">
+        <view class="cat__dot" style="background:{{item.color}}"></view>
+        <view class="cat__body">
+          <text class="cat__name">{{item.key}}（{{item.count}} 处）</text>
+          <text class="cat__desc">{{item.desc}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 使用方法 -->
+    <view class="section-title">如何使用</view>
+    <view class="card block">
+      <view wx:for="{{usage}}" wx:key="*this" class="point">
+        <view class="point__no">{{index + 1}}</view>
+        <text class="point__txt">{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 官方名单 -->
+    <view class="section-title">四川省廉洁文化基地（官方命名）</view>
+    <view class="card block block--plain">
+      <view wx:for="{{officialList}}" wx:key="city" class="oflist">
+        <text class="oflist__city">{{item.city}}</text>
+        <text class="oflist__names">{{item.names.join('、')}}</text>
+      </view>
+    </view>
+
+    <!-- 数据来源 -->
+    <view class="section-title">数据来源与核实口径</view>
+    <view class="card block">
+      <view wx:for="{{sources}}" wx:key="*this" class="point">
+        <view class="point__no">·</view>
+        <text class="point__txt">{{item}}</text>
+      </view>
+      <view class="note">
+        点位坐标为 gcj02 坐标系。标注"已核实"的点位依据官方公布的地址定位；标注"估算"的点位系按地址推算，
+        正式对外发布前建议使用腾讯位置服务坐标拾取器逐条校准。展陈内容与开放时间可能调整，
+        组织集体活动前请以场馆最新公告为准。
+      </view>
+    </view>
+
+    <!-- 共建共育 -->
+    <view class="section-title">共建与反馈</view>
+    <view class="card block">
+      <text class="paragraph">
+        欢迎各市州纪委监委、文旅部门、场馆管理单位及师生团体补充点位线索、核实展陈信息、
+        提供家风故事与廉洁史料，共同把这张地图做成"行走的廉洁课堂"。
+      </text>
+      <view class="contact">
+        <text class="contact__k">联系邮箱</text>
+        <text class="contact__v">qingfengxunji@example.com（请替换为贵校实际邮箱）</text>
+      </view>
+      <view class="contact">
+        <text class="contact__k">内容审核</text>
+        <text class="contact__v">建议由学校纪检监察机构、宣传部门联合审核后发布</text>
+      </view>
+    </view>
+
+    <view class="footer">
+      <text>清风循迹 · 廉洁文化地图</text>
+      <text>以史为鉴，以廉润心</text>
+    </view>
+    <view class="safe-bottom"></view>
+  </view>
+</view>

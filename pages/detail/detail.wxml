@@ -1,0 +1,120 @@
+<view class="page" wx:if="{{site}}">
+  <!-- 头图区（用主色渐变代替图片，避免依赖外部图床） -->
+  <view class="hero" style="background: linear-gradient(140deg, {{color}}, {{color}}CC 62%, #B8860B)">
+    <view class="hero__badges">
+      <text wx:if="{{site.official}}" class="badge badge--official">省级及以上命名基地</text>
+      <text wx:for="{{site.categories}}" wx:key="*this" class="badge">{{item}}</text>
+    </view>
+    <text class="hero__name">{{site.name}}</text>
+    <text class="hero__loc">{{site.city}}{{site.district ? ' · ' + site.district : ''}}</text>
+    <view class="hero__tags">
+      <text wx:for="{{site.tags}}" wx:key="*this" class="hero__tag">#{{item}}</text>
+    </view>
+  </view>
+
+  <!-- 操作条 -->
+  <view class="actions">
+    <view class="action" bindtap="onNavigate">
+      <text class="action__icon">➤</text>
+      <text class="action__txt">导航前往</text>
+    </view>
+    <view class="action" bindtap="onGoMap">
+      <text class="action__icon">🗺</text>
+      <text class="action__txt">地图查看</text>
+    </view>
+    <view class="action" bindtap="onCall" wx:if="{{site.phone}}">
+      <text class="action__icon">☎</text>
+      <text class="action__txt">预约咨询</text>
+    </view>
+    <view class="action {{visited ? 'action--on' : ''}}" bindtap="onToggleVisited">
+      <text class="action__icon">{{visited ? '★' : '☆'}}</text>
+      <text class="action__txt">{{visited ? '已循迹' : '标记循迹'}}</text>
+    </view>
+  </view>
+
+  <view class="content">
+    <!-- 简介 -->
+    <view class="section-title">点位简介</view>
+    <view class="card block">
+      <text class="paragraph">{{site.summary}}</text>
+      <view wx:if="{{site.year}}" class="kv">
+        <text class="kv__k">建馆 / 开放</text>
+        <text class="kv__v">{{site.year}} 年</text>
+      </view>
+      <view class="kv">
+        <text class="kv__k">廉洁要素</text>
+        <text class="kv__v">{{site.categories.join(' · ')}}</text>
+      </view>
+    </view>
+
+    <!-- 廉洁看点 -->
+    <view class="section-title">廉洁看点</view>
+    <view class="card block">
+      <view wx:for="{{site.highlights}}" wx:key="*this" class="point">
+        <view class="point__no">{{index + 1}}</view>
+        <text class="point__txt">{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 廉洁故事 -->
+    <view class="section-title">循迹读史</view>
+    <view class="card block">
+      <text class="paragraph">{{site.story}}</text>
+    </view>
+
+    <!-- 名言家训 -->
+    <view wx:if="{{site.quote}}" class="quote">
+      <text class="quote__mark">“</text>
+      <text class="quote__txt">{{site.quote}}</text>
+    </view>
+
+    <!-- 参观信息 -->
+    <view class="section-title">参观信息</view>
+    <view class="card block">
+      <view class="kv kv--multi">
+        <text class="kv__k">地址</text>
+        <text class="kv__v" bindtap="onNavigate">{{site.city}}{{site.district ? site.district : ''}}{{site.address}}</text>
+      </view>
+      <view class="kv">
+        <text class="kv__k">预约电话</text>
+        <text class="kv__v" bindtap="onCall">{{site.phone || '暂未收录，建议先联系当地纪委监委或文旅部门'}}</text>
+      </view>
+      <view class="kv">
+        <text class="kv__k">建议时长</text>
+        <text class="kv__v">1.5 - 3 小时（含展厅参观与现场教学）</text>
+      </view>
+      <view class="kv">
+        <text class="kv__k">适合对象</text>
+        <text class="kv__v">党员干部主题党日 · 师生研学 · 社会公众</text>
+      </view>
+      <view class="kv">
+        <text class="kv__k">坐标置信度</text>
+        <text class="kv__v">{{site.verify === 'verified' ? '已核实（官方地址）' : '据地址估算，出发前请再确认'}}</text>
+      </view>
+    </view>
+
+    <!-- 同市州其它点位 -->
+    <block wx:if="{{siblings.length}}">
+      <view class="section-title">{{site.city}}其它点位</view>
+      <view class="card block block--plain">
+        <view wx:for="{{siblings}}" wx:key="id" class="sib" data-id="{{item.id}}" bindtap="onSiblingTap">
+          <view class="sib__body">
+            <text class="sib__name">{{item.name}}</text>
+            <text class="sib__meta">{{item.district}} · {{item.categories.join(' / ')}}</text>
+          </view>
+          <text class="sib__arrow">›</text>
+        </view>
+      </view>
+    </block>
+
+    <view class="disclaimer">
+      本页内容依据纪委监委、政府门户及官方媒体报道整理，用于廉洁文化教育；展陈与开放信息可能调整，出行前请以场馆最新公告为准。
+    </view>
+    <view class="safe-bottom"></view>
+  </view>
+</view>
+
+<view wx:else class="notfound">
+  <text class="notfound__t">未找到该点位</text>
+  <text class="notfound__d">可能链接已失效，请返回地图重新选择</text>
+</view>

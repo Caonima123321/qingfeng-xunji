@@ -1,0 +1,63 @@
+.sc {
+  position: relative;
+  display: flex;
+  padding: 20rpx 20rpx 20rpx 0;
+  background: #fff;
+  border-radius: 18rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 18rpx rgba(140, 31, 40, 0.07);
+}
+
+.sc__bar {
+  width: 8rpx;
+  border-radius: 0 6rpx 6rpx 0;
+  margin-right: 18rpx;
+  flex: none;
+}
+
+.sc__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.sc__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sc__name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #2B2B2B;
+  flex: 1;
+  min-width: 0;
+}
+
+.sc__done {
+  flex: none;
+  margin-left: 12rpx;
+  font-size: 20rpx;
+  color: #B8860B;
+  border: 1rpx solid #EEDFB6;
+  background: #FBF5E4;
+  border-radius: 999rpx;
+  padding: 2rpx 12rpx;
+}
+
+.sc__meta {
+  margin: 6rpx 0 12rpx;
+  font-size: 23rpx;
+}
+
+.sc__tags {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 4rpx;
+}
+
+.sc__sum {
+  font-size: 24rpx;
+  color: #5A5A5A;
+  line-height: 1.55;
+}

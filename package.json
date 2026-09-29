@@ -1,0 +1,12 @@
+{
+  "name": "qingfeng-xunji",
+  "version": "1.0.0",
+  "description": "清风循迹 · 四川省廉洁文化地图（多用户 H5 + 零依赖服务端）",
+  "private": true,
+  "scripts": {
+    "start": "node server/server.js"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}

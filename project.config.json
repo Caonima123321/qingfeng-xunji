@@ -1,0 +1,55 @@
+{
+  "description": "清风循迹 · 廉洁文化地图（微信原生小程序）",
+  "appid": "touristappid",
+  "projectname": "qingfeng-xunji",
+  "compileType": "miniprogram",
+  "libVersion": "3.5.5",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "newFeature": true,
+    "coverView": true,
+    "nodeModules": false,
+    "autoAudits": false,
+    "showShadowRootInWxmlPanel": true,
+    "scopeDataCheck": false,
+    "checkInvalidKey": true,
+    "checkSiteMap": true,
+    "uploadWithSourceMap": true,
+    "compileHotReLoad": false,
+    "useMultiFrameRuntime": true,
+    "useApiHook": true,
+    "useApiHostProcess": true,
+    "bundle": false,
+    "useIsolateContext": true,
+    "userConfirmedBundleSwitch": false,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "minifyWXSS": true,
+    "disableUseStrict": false,
+    "showES6CompileOption": false,
+    "useCompilerPlugins": false,
+    "ignoreUploadUnusedFiles": true
+  },
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "地图页",
+          "pathName": "pages/map/map",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "列表页",
+          "pathName": "pages/list/list",
+          "query": "",
+          "scene": null
+        }
+      ]
+    }
+  }
+}
