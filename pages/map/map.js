@@ -18,8 +18,8 @@ Page({
     filtered: [],
     cityStats: [],
     total: SITES.length,
-    center: { lat: PROVINCE_VIEW.lat, lng: PROVINCE_VIEW.lng },
-    scale: PROVINCE_VIEW.scale,
+    center: { lat: HOME.lat, lng: HOME.lng },
+    scale: 9,
     activeCategory: '',
     cityFilter: '',
     activeId: '',
@@ -33,12 +33,13 @@ Page({
   },
 
   // 非渲染状态
-  _view: { lat: PROVINCE_VIEW.lat, lng: PROVINCE_VIEW.lng, scale: PROVINCE_VIEW.scale },
+  _view: { lat: HOME.lat, lng: HOME.lng, scale: 9 },
   _map: null,
 
   onLoad() {
     this._map = wx.createMapContext('qfmap', this);
     this.buildCityStats();
+    this._initialFit = true;   // 首次打开放大到家乡，不缩到全省
     this.applyFilter();
     this.getLocation();
   },
@@ -139,6 +140,11 @@ Page({
   /** 视野自适应到筛选结果 */
   fitToList(list) {
     if (!list.length) return;
+    if (this._initialFit) {
+      this._initialFit = false;
+      this.moveTo(HOME.lat, HOME.lng, 9);   // 打开默认放大到家乡
+      return;
+    }
     if (list.length === 1) {
       this.moveTo(list[0].lat, list[0].lng, 13);
       return;

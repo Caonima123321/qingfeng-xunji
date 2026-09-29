@@ -179,15 +179,13 @@
     if (!map) return;
     map.invalidateSize();
     if (map.getSize().y > 100) {
-      var sheetEl = document.getElementById('sheet');
-      var sheetH = sheetEl ? sheetEl.offsetHeight : Math.round(window.innerHeight * 0.34);
       map.setMaxBounds(SICHUAN_BOUNDS);
-      map.fitBounds(SICHUAN_BOUNDS, { paddingTopLeft: [74, 16], paddingBottomRight: [sheetH + 8, 16] });
-      map.setMinZoom(map.getZoom());
+      map.setMinZoom(map.getBoundsZoom(SICHUAN_BOUNDS));
+      map.setView([HOME.lat, HOME.lng], 9);   // 打开默认放大到家乡
     } else if (attempt < 10) {
       setTimeout(function () { applySichuanView(attempt + 1); }, 150);
     } else {
-      map.setView([30.75, 102.90], 6);
+      map.setView([HOME.lat, HOME.lng], 9);
       map.setMinZoom(6);
     }
   }
