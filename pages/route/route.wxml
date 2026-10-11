@@ -1,0 +1,54 @@
+<view class="page">
+  <!-- 小地图：路线连线 + 编号站点 -->
+  <map
+    id="routemap"
+    class="rmap"
+    latitude="{{center.lat}}"
+    longitude="{{center.lng}}"
+    scale="{{scale}}"
+    markers="{{markers}}"
+    polyline="{{polyline}}"
+    show-location="{{false}}"
+    enable-rotate="{{false}}"
+    enable-overlooking="{{false}}"
+    enable-satellite="{{false}}"
+    enable-zoom="{{true}}"
+    enable-scroll="{{true}}"
+  ></map>
+
+  <scroll-view class="rbody" scroll-y show-scrollbar="{{false}}">
+    <view class="rhead">
+      <text class="rhead__title">{{route.name}}</text>
+      <text class="rhead__sub">{{route.city}} · {{route.days}} · 共 {{stops.length}} 站 · 全程约 {{totalText}}</text>
+    </view>
+
+    <scroll-view class="rtabs" scroll-x show-scrollbar="{{false}}">
+      <view
+        wx:for="{{tabs}}"
+        wx:key="id"
+        class="rtab {{routeId === item.id ? 'rtab--on' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="onTab"
+      >{{item.label}}</view>
+    </scroll-view>
+
+    <text class="rintro">{{route.intro}}</text>
+
+    <view class="rs-title">站点顺序（共 {{stops.length}} 站）</view>
+    <view class="rlist">
+      <view class="ritem" wx:for="{{stops}}" wx:key="name" data-id="{{item.id}}" bindtap="onStop">
+        <text class="rno">{{index + 1}}</text>
+        <view class="rmid">
+          <text class="rname">{{item.name}}</text>
+          <text class="rmeta">{{item.kind}}{{item.note ? ' · ' + item.note : ''}}</text>
+        </view>
+        <text class="rleg">{{item.leg}}</text>
+        <text class="rgo" wx:if="{{item.id}}">›</text>
+      </view>
+    </view>
+
+    <view class="ronmap" bindtap="onMap">在大地图中查看整条线路</view>
+    <text class="rnote">小地图为示意线路，按站点坐标依次连线；实际道路走向以手机地图导航为准。</text>
+    <view class="safe-bottom"></view>
+  </scroll-view>
+</view>

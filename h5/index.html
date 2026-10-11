@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#8C1F28" />
   <title>清风循迹 · 四川省廉洁文化地图</title>
   <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
-  <link rel="stylesheet" href="css/style.css?v=11" />
+  <link rel="stylesheet" href="css/style.css?v=12" />
 </head>
 <body>
   <div id="app">
@@ -34,8 +34,13 @@
     <!-- ============ 内容区 ============ -->
     <main class="content">
 
+      <!-- 封面 / 总览（扫码后的第一屏） -->
+      <section id="view-cover" class="view is-active">
+        <div id="cover-body"></div>
+      </section>
+
       <!-- 地图视图 -->
-      <section id="view-map" class="view is-active">
+      <section id="view-map" class="view">
         <div id="map"></div>
 
         <div class="map-top">
@@ -43,6 +48,7 @@
           <div class="fabs">
             <button class="fab" id="btn-locate"><span class="fab-ic">◎</span><span class="fab-tx">定位</span></button>
             <button class="fab fab-home" id="btn-home"><span class="fab-ic">🏠</span><span class="fab-tx">家乡</span></button>
+            <button class="fab fab-route" id="btn-routes"><span class="fab-ic">🧭</span><span class="fab-tx">路线</span></button>
           </div>
         </div>
 
@@ -72,6 +78,11 @@
           <div class="city-grid" id="city-grid"></div>
           <button class="city-home" id="city-home"></button>
         </div>
+      </section>
+
+      <!-- 研学路线（小地图） -->
+      <section id="view-route" class="view">
+        <div id="route-body"></div>
       </section>
 
       <!-- 列表视图 -->
@@ -123,8 +134,8 @@
 
   </div>
 
-  <script src="js/data.js?v=11"></script>
+  <script src="js/data.js?v=12"></script>
   <script src="vendor/leaflet/leaflet.js"></script>
-  <script src="js/app.js?v=11"></script>
+  <script src="js/app.js?v=12"></script>
 </body>
 </html>

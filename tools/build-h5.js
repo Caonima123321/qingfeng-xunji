@@ -9,6 +9,7 @@ const path = require('path');
 const root = path.join(__dirname, '..');
 const { SITES } = require(path.join(root, 'data', 'sites.js'));
 const { CITIES, CATEGORIES, HOME } = require(path.join(root, 'data', 'constants.js'));
+const { ROUTES } = require(path.join(root, 'data', 'routes.js'));
 
 const h5 = path.join(root, 'h5');
 const h5js = path.join(h5, 'js');
@@ -43,6 +44,7 @@ const js = [
   'window.QF_CITIES = ' + JSON.stringify(CITIES) + ';',
   'window.QF_CATEGORIES = ' + JSON.stringify(CATEGORIES) + ';',
   'window.QF_HOME = ' + JSON.stringify(HOME) + ';',
+  'window.QF_ROUTES = ' + JSON.stringify(ROUTES) + ';',
   'window.QF_BOUNDARY = ' + boundary + ';',
   ''
 ].join('\n');

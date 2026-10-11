@@ -1,0 +1,54 @@
+<view class="page">
+  <!-- 头部 -->
+  <view class="hero">
+    <text class="hero__mark">廉</text>
+    <text class="hero__title">清风循迹</text>
+    <text class="hero__sub">廉洁文化地图 · 四川省</text>
+    <view class="hero__line"></view>
+    <text class="hero__tag">以史为鉴 · 以廉润心</text>
+  </view>
+
+  <view class="main">
+    <!-- 这是一张什么图 -->
+    <view class="card">
+      <view class="sec">这是一张什么图？</view>
+      <text class="desc">深入挖掘廉洁文化的历史纵深与时代价值，梳理四川省内蕴含廉洁要素的纪念场馆、教育基地与家风家训场所，串联古今廉洁故事，为党员干部、师生群体及社会公众提供可视化、可感知、可参与的廉洁文化教育资源。</text>
+
+      <view class="stats">
+        <view class="stat" wx:for="{{stats}}" wx:key="t">
+          <text class="stat__n">{{item.n}}</text>
+          <text class="stat__t">{{item.t}}</text>
+        </view>
+      </view>
+
+      <view class="cats">
+        <view class="cat" wx:for="{{categories}}" wx:key="key">
+          <view class="cat__dot" style="background:{{item.color}}"></view>
+          <text class="cat__k">{{item.key}}</text>
+          <text class="cat__n">{{item.count}}</text>
+        </view>
+      </view>
+      <text class="cats__cap">四川省 {{home.city}} · 家乡点位已就位</text>
+    </view>
+
+    <!-- 箭头按钮：进入大地图 -->
+    <view class="enter" bindtap="onEnter">
+      <text class="enter__t">进入地图</text>
+      <text class="enter__a">→</text>
+    </view>
+
+    <!-- 研学路线 -->
+    <view class="sec sec--out">研学路线 · 点开看小地图</view>
+    <view class="rcard" wx:for="{{routes}}" wx:key="id" data-id="{{item.id}}" bindtap="onRoute">
+      <view class="rcard__top">
+        <text class="rcard__name">{{item.name}}</text>
+        <text class="rcard__n">{{item.stops}} 站</text>
+      </view>
+      <text class="rcard__desc">{{item.desc}}</text>
+      <text class="rcard__meta">{{item.days}} · {{item.city}}</text>
+    </view>
+
+    <text class="note">里程由本站按坐标估算，仅供研学参考；展陈与开放信息以场馆最新公告为准。</text>
+    <view class="safe-bottom"></view>
+  </view>
+</view>

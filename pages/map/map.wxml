@@ -30,6 +30,10 @@
         <text class="fab__icon">{{locating ? '…' : '◎'}}</text>
         <text class="fab__txt">定位</text>
       </view>
+      <view class="fab fab--route" bindtap="goRoute">
+        <text class="fab__icon">🧭</text>
+        <text class="fab__txt">路线</text>
+      </view>
       <view class="fab fab--home" bindtap="goHome">
         <text class="fab__icon">🏠</text>
         <text class="fab__txt">家乡</text>
@@ -119,11 +123,13 @@
   <!-- 应用内路线规划（不依赖任何地图账号） -->
   <view wx:if="{{routeInfo}}" class="routebar">
     <view class="routebar__body">
-      <text class="routebar__title">我的位置 → {{routeInfo.name}}</text>
-      <text class="routebar__sub">直线距离 {{routeInfo.distText}} · 虚线为示意路线</text>
+      <text class="routebar__title">{{routeInfo.study ? routeInfo.name : '我的位置 → ' + routeInfo.name}}</text>
+      <text wx:if="{{routeInfo.study}}" class="routebar__sub">共 {{routeInfo.stops}} 站 · 全程约 {{routeInfo.distText}} · 虚线为示意线路</text>
+      <text wx:else class="routebar__sub">直线距离 {{routeInfo.distText}} · 虚线为示意路线</text>
     </view>
     <view class="routebar__btns">
-      <view class="routebar__btn routebar__btn--main" bindtap="onRouteNav">手机地图导航</view>
+      <view wx:if="{{routeInfo.study}}" class="routebar__btn routebar__btn--main" bindtap="goRoute">站点列表</view>
+      <view wx:else class="routebar__btn routebar__btn--main" bindtap="onRouteNav">手机地图导航</view>
       <view class="routebar__btn" bindtap="clearRoute">结束</view>
     </view>
   </view>

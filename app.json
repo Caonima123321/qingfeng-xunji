@@ -1,6 +1,8 @@
 {
   "pages": [
+    "pages/cover/cover",
     "pages/map/map",
+    "pages/route/route",
     "pages/list/list",
     "pages/about/about",
     "pages/detail/detail"

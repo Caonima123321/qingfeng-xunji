@@ -1,5 +1,6 @@
 const { HOME, CITIES, CATEGORIES, PROVINCE_VIEW } = require('../../data/constants.js');
 const { SITES } = require('../../data/sites.js');
+const { ROUTES } = require('../../data/routes.js');
 const siteUtil = require('../../utils/site.js');
 
 /** 市州短名：阿坝藏族羌族自治州 -> 阿坝州 */
@@ -8,6 +9,25 @@ function shortCity(name) {
     .replace('藏族羌族自治州', '州')
     .replace('藏族自治州', '州')
     .replace('彝族自治州', '州');
+}
+
+/** 把研学路线的 stations 解析为带名称/坐标的站点列表 */
+function resolveStations(route) {
+  const byId = {};
+  SITES.forEach(function (s) { byId[String(s.id)] = s; });
+  return (route.stations || []).map(function (st) {
+    if (st.id && byId[String(st.id)]) {
+      const s = byId[String(st.id)];
+      return {
+        id: s.id, name: s.name, lat: s.lat, lng: s.lng,
+        kind: s.district || s.city || '廉洁点位', note: ''
+      };
+    }
+    return {
+      id: '', name: st.name, lat: st.lat, lng: st.lng,
+      kind: st.kind || '顺路景点', note: ''
+    };
+  });
 }
 
 Page({
@@ -55,6 +75,12 @@ Page({
       const id = app.globalData.routeTo;
       app.globalData.routeTo = null;
       this.drawRouteTo(id);
+    }
+    // 路线页点了「在大地图中查看整条线路」
+    if (app && app.globalData && app.globalData.studyRoute) {
+      const rid = app.globalData.studyRoute;
+      app.globalData.studyRoute = null;
+      this.drawStudyRoute(rid);
     }
   },
 
@@ -221,6 +247,56 @@ Page({
     if (!info) return;
     const site = SITES.filter(function (s) { return String(s.id) === String(info.id); })[0];
     if (site) siteUtil.openLocation(site);
+  },
+
+  /** 研学路线：在地图上画出整条线路 + 编号站点 */
+  drawStudyRoute(routeId) {
+    const route = ROUTES.filter(function (r) { return String(r.id) === String(routeId); })[0];
+    if (!route) return;
+    const stops = resolveStations(route);
+    if (stops.length < 2) return;
+    const pts = stops.map(function (s) { return { latitude: s.lat, longitude: s.lng }; });
+    let total = 0;
+    for (let i = 1; i < stops.length; i++) {
+      total += siteUtil.distanceKm(stops[i - 1].lat, stops[i - 1].lng, stops[i].lat, stops[i].lng) || 0;
+    }
+    this.setData({
+      polyline: [{ points: pts, color: '#8C1F28', width: 5, dottedLine: true, arrowLine: false }],
+      markers: stops.map(function (s, i) {
+        return {
+          id: 9000 + i,
+          latitude: s.lat,
+          longitude: s.lng,
+          iconPath: '/assets/marker/pin-all-on.png',
+          width: 32,
+          height: 32,
+          callout: {
+            content: (i + 1) + '. ' + s.name,
+            color: '#2B2B2B', fontSize: 12, bgColor: '#FFFFFF',
+            borderColor: '#8C1F28', borderWidth: 1, borderRadius: 8,
+            padding: 6, display: 'ALWAYS', textAlign: 'center'
+          }
+        };
+      }),
+      routeInfo: {
+        id: route.id,
+        name: route.name,
+        study: true,
+        stops: stops.length,
+        distText: siteUtil.distanceText(Math.round(total * 10) / 10)
+      }
+    });
+    if (this._map) {
+      this._map.includePoints({ points: pts, padding: [150, 60, 400, 60] });
+    }
+    wx.showToast({ title: '已在地图上画出整条线路', icon: 'none' });
+  },
+
+  /** 打开研学路线（小地图）页 */
+  goRoute() {
+    const info = this.data.routeInfo;
+    const q = info && info.study ? '?id=' + info.id : '';
+    wx.navigateTo({ url: '/pages/route/route' + q });
   },
 
   /* ---------------- 定位 ---------------- */

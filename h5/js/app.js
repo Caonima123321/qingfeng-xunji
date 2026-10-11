@@ -6,6 +6,7 @@
   var CITIES = window.QF_CITIES || [];
   var CATEGORIES = window.QF_CATEGORIES || [];
   var HOME = window.QF_HOME || { city: '南充市', lat: 30.837332, lng: 106.110244 };
+  var ROUTES = window.QF_ROUTES || [];
 
   /* 高德瓦片（gcj02，与点位坐标一致；备选：可换成 OSM 但需 wgs84 转换） */
   var TILE_URL = 'https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}';
@@ -34,7 +35,9 @@
     kw: '',
     scope: 'all',
     user: null,
-    route: null
+    route: null,
+    routeId: null,
+    studyRoute: null
   };
 
   var map = null;
@@ -132,11 +135,24 @@
     var v = state.view;
     $all('.view').forEach(function (el) { el.classList.remove('is-active'); });
     $all('.tabbar button').forEach(function (b) { b.classList.toggle('on', b.dataset.view === v); });
-    var titles = { map: '四川省 · 廉洁文化地图', list: '廉迹 · 点位总览', about: '关于清风循迹', detail: '点位详情' };
+    var titles = {
+      cover: '清风循迹', route: '研学路线',
+      map: '四川省 · 廉洁文化地图', list: '廉迹 · 点位总览',
+      about: '关于清风循迹', detail: '点位详情'
+    };
     $('#nav-title').textContent = titles[v] || '清风循迹';
     var backBtn = $('#nav-back');
-    if (backBtn) backBtn.hidden = (v !== 'detail');
-    if (v === 'map') {
+    if (backBtn) backBtn.hidden = (v !== 'detail' && v !== 'route');
+    /* 封面页是落地页，隐藏底部 Tab 保持干净 */
+    var tb = $('#tabbar');
+    if (tb) tb.classList.toggle('is-hidden', v === 'cover');
+    if (v === 'cover') {
+      $('#view-cover').classList.add('is-active');
+      renderCover();
+    } else if (v === 'route') {
+      $('#view-route').classList.add('is-active');
+      renderRoute();
+    } else if (v === 'map') {
       $('#view-map').classList.add('is-active');
       renderMap();
     } else if (v === 'list') {
@@ -252,6 +268,167 @@
     map.fitBounds(b, { padding: [60, 60], maxZoom: 13 });
   }
 
+  /* ---------------- 封面页（扫码后的第一屏：文字介绍 + 这是什么图 + 箭头按钮） ---------------- */
+  function sichuanSvg(w, h) {
+    var b = window.QF_BOUNDARY;
+    var geom = (b && b.features && b.features[0]) ? b.features[0].geometry : null;
+    if (!geom) return '';
+    var minLat = 25.97, maxLat = 34.32, minLng = 97.35, maxLng = 108.58;
+    var k = Math.cos((minLat + maxLat) / 2 * Math.PI / 180);
+    var spanX = (maxLng - minLng) * k, spanY = (maxLat - minLat);
+    function px(lng, lat) {
+      return [(lng - minLng) * k / spanX * w, (maxLat - lat) / spanY * h];
+    }
+    var rings = [];
+    if (geom.type === 'Polygon') geom.coordinates.forEach(function (r) { rings.push(r); });
+    else if (geom.type === 'MultiPolygon') geom.coordinates.forEach(function (p) { p.forEach(function (r) { rings.push(r); }); });
+    var d = rings.map(function (ring) {
+      return ring.map(function (p, i) {
+        var q = px(p[0], p[1]);
+        return (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1);
+      }).join(' ') + 'Z';
+    }).join('');
+    var dots = SITES.map(function (s) {
+      var q = px(s.lng, s.lat);
+      return '<circle cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) + '" r="2" fill="#8C1F28" opacity=".5"/>';
+    }).join('');
+    return '<svg viewBox="0 0 ' + w + ' ' + h + '" class="cover-svg" preserveAspectRatio="xMidYMid meet">' +
+      '<path d="' + d + '" fill="#F7EDEC" stroke="#8C1F28" stroke-width="1.3" stroke-linejoin="round"/>' + dots + '</svg>';
+  }
+  function renderCover() {
+    var box = $('#cover-body');
+    if (!box) return;
+    var cs = {};
+    SITES.forEach(function (s) { cs[s.city] = 1; });
+    var routeCards = ROUTES.map(function (r) {
+      return '<button class="cover-route" data-route="' + esc(r.id) + '">' +
+        '<span class="cover-route__top"><b>' + esc(r.name) + '</b><i>' + (r.stations || []).length + ' 站</i></span>' +
+        '<span class="cover-route__desc">' + esc(r.desc || '') + '</span>' +
+        '<span class="cover-route__meta">' + esc(r.days || '') + ' · ' + esc(r.city || '') + '</span>' +
+        '</button>';
+    }).join('');
+    box.innerHTML =
+      '<div class="cover-hero">' +
+        '<div class="cover-hero__mark">廉</div>' +
+        '<div class="cover-hero__title">清风循迹</div>' +
+        '<div class="cover-hero__sub">廉洁文化地图 · 四川省</div>' +
+        '<div class="cover-hero__line"></div>' +
+        '<div class="cover-hero__tag">以史为鉴 · 以廉润心</div>' +
+      '</div>' +
+      '<div class="cover-main">' +
+        '<div class="cover-card">' +
+          '<div class="cover-sec">这是一张什么图？</div>' +
+          '<p class="cover-desc">深入挖掘廉洁文化的历史纵深与时代价值，梳理四川省内蕴含廉洁要素的纪念场馆、教育基地与家风家训场所，串联古今廉洁故事，为党员干部、师生群体及社会公众提供可视化、可感知、可参与的廉洁文化教育资源。</p>' +
+          '<div class="cover-stats">' +
+            '<div class="cover-stat"><b>' + SITES.length + '</b><span>廉洁点位</span></div>' +
+            '<div class="cover-stat"><b>' + Object.keys(cs).length + '</b><span>市州覆盖</span></div>' +
+            '<div class="cover-stat"><b>' + CATEGORIES.length + '</b><span>廉洁要素</span></div>' +
+          '</div>' +
+          '<div class="cover-map">' + sichuanSvg(320, 275) + '<span class="cover-map__cap">四川省 · 点位分布</span></div>' +
+        '</div>' +
+        '<button class="cover-enter" id="cover-enter"><span>进入地图</span><i>→</i></button>' +
+        '<div class="cover-sec cover-sec--out">研学路线 · 点开看小地图</div>' +
+        '<div class="cover-routes">' + (routeCards || '<div class="empty">暂无路线</div>') + '</div>' +
+        '<p class="cover-note">里程由本站按坐标估算，仅供研学参考；展陈与开放信息以场馆最新公告为准。</p>' +
+      '</div>';
+    var e = $('#cover-enter');
+    if (e) e.onclick = function () { location.hash = '#/map'; };
+    $all('.cover-route').forEach(function (b) {
+      b.onclick = function () { openRoute(b.dataset.route); };
+    });
+  }
+
+  /* ---------------- 研学路线（小地图：路线连线 + 站点列表 + 里程） ---------------- */
+  var miniMap = null;
+  function routeById(id) {
+    return ROUTES.filter(function (r) { return String(r.id) === String(id); })[0];
+  }
+  function resolveStations(route) {
+    var byId = {};
+    SITES.forEach(function (s) { byId[String(s.id)] = s; });
+    return ((route && route.stations) || []).map(function (st) {
+      if (st.id && byId[String(st.id)]) {
+        var s = byId[String(st.id)];
+        return {
+          id: s.id, name: s.name, lat: s.lat, lng: s.lng,
+          kind: (s.district || s.city || '廉洁点位'), note: (s.categories || []).join(' · ')
+        };
+      }
+      return { id: '', name: st.name, lat: st.lat, lng: st.lng, kind: st.kind || '顺路景点', note: st.note || '' };
+    });
+  }
+  function stopIcon(i) {
+    return L.divIcon({ className: 'rs-pin', html: '<span>' + i + '</span>', iconSize: [26, 26], iconAnchor: [13, 13] });
+  }
+  function openRoute(id) {
+    state.routeId = id || (ROUTES[0] && ROUTES[0].id);
+    if (state.view !== 'route') location.hash = '#/route';
+    else renderRoute();
+  }
+  function renderRoute() {
+    var r = routeById(state.routeId) || ROUTES[0];
+    var box = $('#route-body');
+    if (!box) return;
+    if (!r) { box.innerHTML = '<div class="empty">暂无研学路线</div>'; return; }
+    var stops = resolveStations(r);
+    var legs = [], total = 0;
+    for (var i = 1; i < stops.length; i++) {
+      var dd = distKm(stops[i - 1].lat, stops[i - 1].lng, stops[i].lat, stops[i].lng);
+      legs.push(dd); total += dd;
+    }
+    var listHtml = stops.map(function (st, i) {
+      return '<div class="rs-item">' +
+        '<span class="rs-no">' + (i + 1) + '</span>' +
+        '<div class="rs-body"><span class="rs-name">' + esc(st.name) + '</span>' +
+        '<span class="rs-meta">' + esc(st.kind) + (st.note ? ' · ' + esc(st.note) : '') + '</span></div>' +
+        '<span class="rs-leg">' + (i === 0 ? '起点' : '↑ ' + distText(legs[i - 1])) + '</span>' +
+        (st.id ? '<a class="rs-go" href="#/detail/' + encodeURIComponent(st.id) + '">›</a>' : '') +
+        '</div>';
+    }).join('');
+    box.innerHTML =
+      '<div class="route-head">' +
+        '<div class="route-title">' + esc(r.name) + '</div>' +
+        '<div class="route-sub">' + esc(r.city || '') + ' · ' + esc(r.days || '') + ' · 共 ' + stops.length +
+          ' 站 · 全程约 ' + distText(total) + '</div>' +
+      '</div>' +
+      '<div class="route-tabs">' + ROUTES.map(function (x) {
+        return '<button class="route-tab' + (String(x.id) === String(r.id) ? ' on' : '') +
+          '" data-route="' + esc(x.id) + '">' + esc((x.city || x.name).replace('藏族羌族自治州', '州').replace('藏族自治州', '州').replace('彝族自治州', '州')) + '</button>';
+      }).join('') + '</div>' +
+      '<div class="route-mini" id="route-mini"></div>' +
+      '<div class="route-main">' +
+        '<p class="route-intro">' + esc(r.intro || '') + '</p>' +
+        '<div class="rs-title">站点顺序（共 ' + stops.length + ' 站）</div>' +
+        '<div class="route-list">' + listHtml + '</div>' +
+        '<button class="route-onmap" id="route-onmap">在大地图中查看整条线路</button>' +
+        '<p class="route-note">小地图为示意线路，按站点坐标依次连线；实际道路走向以手机地图导航为准。</p>' +
+      '</div>';
+    drawMiniMap(stops);
+    $all('.route-tab').forEach(function (b) {
+      b.onclick = function () { state.routeId = b.dataset.route; renderRoute(); };
+    });
+    var om = $('#route-onmap');
+    if (om) om.onclick = function () {
+      state.studyRoute = r.id; state.route = null;
+      location.hash = '#/map';
+    };
+  }
+  function drawMiniMap(stops) {
+    var el = document.getElementById('route-mini');
+    if (!el || typeof L === 'undefined' || !stops.length) return;
+    if (miniMap) { miniMap.remove(); miniMap = null; }
+    miniMap = L.map('route-mini', { zoomControl: false, attributionControl: false, scrollWheelZoom: false });
+    L.tileLayer(TILE_URL, { subdomains: ['1', '2', '3', '4'], maxZoom: 18 }).addTo(miniMap);
+    var pts = stops.map(function (s) { return [s.lat, s.lng]; });
+    L.polyline(pts, { color: '#8C1F28', weight: 4, opacity: .85, dashArray: '9 7' }).addTo(miniMap);
+    stops.forEach(function (s, i) {
+      L.marker([s.lat, s.lng], { icon: stopIcon(i + 1) }).addTo(miniMap)
+        .bindPopup('<b>' + esc(s.name) + '</b><br>' + esc(s.kind));
+    });
+    try { miniMap.fitBounds(L.latLngBounds(pts), { padding: [34, 34] }); } catch (e) {}
+    setTimeout(function () { if (miniMap) miniMap.invalidateSize(); }, 140);
+  }
+
   /* ---------------- 应用内路线规划（不依赖任何地图账号 / 登录） ---------------- */
   function siteById(id) {
     return SITES.filter(function (x) { return String(x.id) === String(id); })[0];
@@ -292,6 +469,7 @@
   }
   function clearRoute() {
     state.route = null;
+    state.studyRoute = null;
     if (routeLayer && map) { map.removeLayer(routeLayer); routeLayer = null; }
     var p = $('#route-panel'); if (p) p.hidden = true;
     var sh = $('#sheet'), chev = $('#sheet-chevron');
@@ -305,6 +483,37 @@
     if (routeLayer) { map.removeLayer(routeLayer); routeLayer = null; }
     var p = $('#route-panel');
     if (!p) return;
+    /* 研学路线模式：整条线路 + 编号站点（来自「小地图」的"在大地图中查看"） */
+    if (state.studyRoute) {
+      var r = routeById(state.studyRoute);
+      if (!r) { state.studyRoute = null; p.hidden = true; return; }
+      var stops = resolveStations(r);
+      if (stops.length < 2) { p.hidden = true; return; }
+      var pts = stops.map(function (x) { return [x.lat, x.lng]; });
+      var total = 0;
+      for (var i = 1; i < stops.length; i++) {
+        total += distKm(stops[i - 1].lat, stops[i - 1].lng, stops[i].lat, stops[i].lng);
+      }
+      routeLayer = L.layerGroup().addTo(map);
+      L.polyline(pts, { color: '#8C1F28', weight: 4, opacity: 0.9, dashArray: '9 7' }).addTo(routeLayer);
+      stops.forEach(function (x, i) {
+        L.marker([x.lat, x.lng], { icon: stopIcon(i + 1), zIndexOffset: 600 }).addTo(routeLayer);
+      });
+      map.setMaxBounds(ROUTE_BOUNDS);
+      map.setMinZoom(2);
+      try { map.fitBounds(L.latLngBounds(pts), { padding: [50, 50], maxZoom: 13 }); } catch (e) {}
+      p.innerHTML =
+        '<div class="rt-head"><span class="rt-title">' + esc(r.name) + '</span><button id="rt-close">结束</button></div>' +
+        '<div class="rt-sub">共 ' + stops.length + ' 站 · 全程约 <b>' + distText(total) + '</b>（虚线为示意线路）</div>' +
+        '<div class="rt-foot"><a href="#/route">查看站点列表与里程 →</a></div>';
+      p.hidden = false;
+      var rc = $('#rt-close'); if (rc) rc.onclick = clearRoute;
+      var sh2 = $('#sheet'), ch2 = $('#sheet-chevron');
+      if (sh2) sh2.classList.add('collapsed');
+      if (ch2) ch2.textContent = '展开 ▴';
+      setTimeout(function () { if (map) map.invalidateSize(); }, 280);
+      return;
+    }
     if (!state.route || !state.user) { p.hidden = true; return; }
     var s = siteById(state.route.id);
     if (!s) { state.route = null; p.hidden = true; return; }
@@ -648,6 +857,8 @@
       state.view = 'detail';
     } else if (parts[0] === 'list') { state.view = 'list'; }
     else if (parts[0] === 'about') { state.view = 'about'; }
+    else if (parts[0] === 'route') { state.view = 'route'; }
+    else if (parts[0] === '' || parts[0] === 'cover') { state.view = 'cover'; }
     else { state.view = 'map'; }
     render();
   }
@@ -663,12 +874,21 @@
     /* 顶部导航返回 */
     var navBack = $('#nav-back');
     if (navBack) {
-      navBack.onclick = function () { setView(state.prevView || 'map'); };
+      navBack.onclick = function () {
+        if (state.view === 'route') { location.hash = '#/map'; return; }
+        setView(state.prevView || 'map');
+      };
     }
     /* 地图视图按钮 */
     $('#go-search').onclick = function () { setView('list'); };
     $('#btn-locate').onclick = locate;
     $('#btn-home').onclick = goHome;
+    var btnRoutes = $('#btn-routes');
+    if (btnRoutes) {
+      btnRoutes.onclick = function () {
+        openRoute(state.routeId || (ROUTES[0] && ROUTES[0].id));
+      };
+    }
     $('#btn-legend').onclick = function () {
       var l = $('#legend');
       var open = l.hidden;
