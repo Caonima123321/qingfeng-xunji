@@ -59,12 +59,12 @@
     var t = document.createElement('div');
     t.className = 'toast';
     t.textContent = msg;
-    document.body.appendChild(t);
+    (document.getElementById('app') || document.body).appendChild(t);
     setTimeout(function () { t.remove(); }, 2200);
   }
   function catColor(site) {
     var hit = CATEGORIES.filter(function (c) { return (site.categories || []).indexOf(c.key) > -1; })[0];
-    return hit ? hit.color : '#8C1F28';
+    return hit ? hit.color : '#96232E';
   }
   function distKm(lat1, lng1, lat2, lng2) {
     var R = 6371, toRad = function (d) { return d * Math.PI / 180; };
@@ -189,7 +189,7 @@
       pane: 'maskPane',
       fillColor: '#F0EBE0',
       fillOpacity: 1,
-      color: '#8C1F28',
+      color: '#96232E',
       weight: 2,
       opacity: 1,
       fillRule: 'evenodd',
@@ -367,10 +367,10 @@
     }).join('');
     var dots = SITES.map(function (s) {
       var q = px(s.lng, s.lat);
-      return '<circle cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) + '" r="2" fill="#8C1F28" opacity=".5"/>';
+      return '<circle cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) + '" r="2" fill="#96232E" opacity=".5"/>';
     }).join('');
     return '<svg viewBox="0 0 ' + w + ' ' + h + '" class="cover-svg" preserveAspectRatio="xMidYMid meet">' +
-      '<path d="' + d + '" fill="#F7EDEC" stroke="#8C1F28" stroke-width="1.3" stroke-linejoin="round"/>' + dots + '</svg>';
+      '<path d="' + d + '" fill="#F7F0E5" stroke="#96232E" stroke-width="1.3" stroke-linejoin="round"/>' + dots + '</svg>';
   }
   function renderCover() {
     var box = $('#cover-body');
@@ -473,7 +473,7 @@
           '" data-route="' + esc(x.id) + '">' + esc((x.city || x.name).replace('藏族羌族自治州', '州').replace('藏族自治州', '州').replace('彝族自治州', '州')) + '</button>';
       }).join('') + '</div>' +
       '<div class="route-mini" id="route-mini"></div>' +
-      '<div class="route-main">' +
+      '<div class="route-doc">' +
         '<p class="route-intro">' + esc(r.intro || '') + '</p>' +
         '<div class="rs-title">站点顺序（共 ' + stops.length + ' 站）</div>' +
         '<div class="route-list">' + listHtml + '</div>' +
@@ -497,7 +497,7 @@
     miniMap = L.map('route-mini', { zoomControl: false, attributionControl: false, scrollWheelZoom: false });
     L.tileLayer(TILE_URL, { subdomains: ['1', '2', '3', '4'], maxZoom: 18 }).addTo(miniMap);
     var pts = stops.map(function (s) { return [s.lat, s.lng]; });
-    L.polyline(pts, { color: '#8C1F28', weight: 4, opacity: .85, dashArray: '9 7' }).addTo(miniMap);
+    L.polyline(pts, { color: '#96232E', weight: 4, opacity: .85, dashArray: '9 7' }).addTo(miniMap);
     stops.forEach(function (s, i) {
       L.marker([s.lat, s.lng], { icon: stopIcon(i + 1) }).addTo(miniMap)
         .bindPopup('<b>' + esc(s.name) + '</b><br>' + esc(s.kind));
@@ -572,7 +572,7 @@
         total += distKm(stops[i - 1].lat, stops[i - 1].lng, stops[i].lat, stops[i].lng);
       }
       routeLayer = L.layerGroup().addTo(map);
-      L.polyline(pts, { color: '#8C1F28', weight: 4, opacity: 0.9, dashArray: '9 7' }).addTo(routeLayer);
+      L.polyline(pts, { color: '#96232E', weight: 4, opacity: 0.9, dashArray: '9 7' }).addTo(routeLayer);
       stops.forEach(function (x, i) {
         L.marker([x.lat, x.lng], { icon: stopIcon(i + 1), zIndexOffset: 600 }).addTo(routeLayer);
       });
@@ -597,7 +597,7 @@
     var a = [state.user.lat, state.user.lng];
     var b = [s.lat, s.lng];
     routeLayer = L.layerGroup().addTo(map);
-    L.polyline([a, b], { color: '#8C1F28', weight: 4, opacity: 0.9, dashArray: '10 7' }).addTo(routeLayer);
+    L.polyline([a, b], { color: '#96232E', weight: 4, opacity: 0.9, dashArray: '10 7' }).addTo(routeLayer);
     L.marker(b, { icon: iconFor(s), zIndexOffset: 600 }).addTo(routeLayer);
     /* 临时放宽视野锁定，保证省外起点也能看到完整路线 */
     map.setMaxBounds(ROUTE_BOUNDS);
@@ -780,7 +780,7 @@
     var quote = s.quote ? '<div class="quote">“' + esc(s.quote) + '”</div>' : '';
 
     box.innerHTML =
-      '<div class="detail-hero" style="background:linear-gradient(140deg,' + color + ',' + color + 'cc 62%,#B8860B)">' +
+      '<div class="detail-hero" style="background:linear-gradient(150deg,' + color + ',' + color + 'd9 58%,#C09A56)">' +
         '<div class="detail-badges">' + badges + '</div>' +
         '<div class="detail-name">' + esc(s.name) + '</div>' +
         '<div class="detail-loc">' + esc(s.city + (s.district ? ' · ' + s.district : '')) + '</div>' +
@@ -812,7 +812,7 @@
         '</div>' +
         '<div class="sec-title">规划到这里的路线</div>' +
         '<div class="block">' +
-          '<button id="dv-route2" class="route-main"><span>🧭</span>在应用内规划路线</button>' +
+          '<button id="dv-route2" class="route-cta"><span>🧭</span>在应用内规划路线</button>' +
           '<p class="route-hint">在地图上标出「我的位置 → ' + esc(s.name) + '」的路线与距离，<b>无需登录任何地图账号</b>。</p>' +
           '<div class="route-alt">如需真实路况导航，用手机地图打开：' +
             '<a href="' + routeUrl('car') + '" target="_blank" rel="noopener">驾车</a>' +
