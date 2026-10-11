@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#8C1F28" />
   <title>清风循迹 · 四川省廉洁文化地图</title>
   <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
-  <link rel="stylesheet" href="css/style.css?v=7" />
+  <link rel="stylesheet" href="css/style.css?v=11" />
 </head>
 <body>
   <div id="app">
@@ -58,6 +58,9 @@
           </div>
           <div class="sheet-list" id="sheet-list"></div>
         </div>
+
+        <!-- 应用内路线规划面板（不依赖任何地图账号） -->
+        <div class="route-panel" id="route-panel" hidden></div>
 
         <!-- 市州选择 -->
         <div class="modal-mask" id="city-mask" hidden></div>
@@ -120,8 +123,8 @@
 
   </div>
 
-  <script src="js/data.js?v=7"></script>
+  <script src="js/data.js?v=11"></script>
   <script src="vendor/leaflet/leaflet.js"></script>
-  <script src="js/app.js?v=7"></script>
+  <script src="js/app.js?v=11"></script>
 </body>
 </html>

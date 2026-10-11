@@ -63,7 +63,7 @@ const app = fs.readFileSync(path.join(h5, 'js', 'app.js'), 'utf8');
 const used = new Set();
 let m2; const re2 = /\$\('#([A-Za-z0-9_-]+)'\)/g;
 while ((m2 = re2.exec(app))) used.add(m2[1]);
-const dynamic = new Set(['dv-visited', 'dv-copy', 'clear-loc', 'u-name', 'u-pass', 'u-login', 'u-register', 'user-logout']);
+const dynamic = new Set(['dv-visited', 'dv-copy', 'dv-route', 'dv-route2', 'clear-loc', 'rt-close']);
 let miss = 0;
 used.forEach(function (id) {
   if (!ids.has(id) && !dynamic.has(id)) { miss++; out.push('  ✗ app.js 引用不存在的 id：#"' + id + '"'); }

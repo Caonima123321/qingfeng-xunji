@@ -284,6 +284,38 @@ input { font-family: inherit; }
 .route-mode span { font-size: 20px; line-height: 1; }
 .route-mode:active { background: #F2E9DF; border-color: var(--primary); color: var(--primary); }
 .route-hint { margin: 10px 0 0; font-size: 12px; color: var(--ink-3); line-height: 1.65; }
+.route-main {
+  width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 13px; border: none; border-radius: 12px; font-size: 15px; font-weight: 600;
+  color: #fff; background: linear-gradient(135deg, var(--primary), #A8383F);
+}
+.route-main:active { opacity: .88; }
+.route-alt { margin-top: 12px; padding-top: 12px; border-top: 1px solid #F4F0E7; font-size: 12px; color: var(--ink-3); }
+.route-alt a {
+  display: inline-block; margin: 6px 8px 0 0; padding: 5px 14px; border-radius: 20px;
+  background: #FBF7EE; border: 1px solid var(--line); color: var(--primary); text-decoration: none;
+}
+.route-alt a:active { background: #F2E9DF; }
+
+/* 应用内路线规划面板（显示在地图上） */
+.route-panel {
+  position: absolute; left: 14px; right: 14px;
+  bottom: calc(var(--tabbar-h) + var(--tabbar-float) + var(--safe-b) + 60px);
+  background: #fff; border-radius: 16px; padding: 14px 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.22); z-index: 1200;
+}
+.rt-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.rt-title { font-size: 14px; font-weight: 700; color: var(--ink); }
+.rt-head button { flex: none; font-size: 12px; color: var(--ink-3); background: #F5F1E8; border: none; border-radius: 20px; padding: 5px 12px; }
+.rt-sub { margin-top: 6px; font-size: 12px; color: var(--ink-3); line-height: 1.6; }
+.rt-sub b { color: var(--primary); }
+.rt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 11px; }
+.rt-item { display: flex; align-items: center; gap: 6px; background: #FBF7EE; border-radius: 10px; padding: 8px 10px; font-size: 12px; }
+.rt-ic { font-size: 15px; line-height: 1; }
+.rt-k { color: var(--ink-2); }
+.rt-v { margin-left: auto; color: var(--primary); font-weight: 600; }
+.rt-foot { margin-top: 11px; }
+.rt-foot a { display: block; text-align: center; padding: 10px; border-radius: 10px; background: #F7EDEC; color: var(--primary); font-size: 13px; font-weight: 600; text-decoration: none; }
 .point { display: flex; gap: 9px; padding: 7px 0; font-size: 13px; line-height: 1.6; color: #3A3A3A; }
 .point-no { flex: none; width: 20px; height: 20px; border-radius: 50%; background: #F7EDEC; color: var(--primary); font-size: 11px; text-align: center; line-height: 20px; }
 .quote { margin-top: 14px; padding: 15px 15px 15px 22px; background: linear-gradient(135deg, #FBF5E4, #F7EDEC); border-left: 4px solid var(--gold); border-radius: 0 12px 12px 0; font-size: 15px; color: #6B4A00; font-weight: 600; line-height: 1.7; }

@@ -22,6 +22,8 @@
   var NAV_BOUNDS = [[20.0, 88.0], [40.0, 118.0]];
   /* 遮罩外圈（覆盖中国及周边，远大于锁定范围，保证不露底） */
   var MASK_OUTER = [[52, 78], [52, 128], [12, 128], [12, 78]];
+  /* 规划路线时临时放宽视野（起点可能远在省外），结束后恢复四川锁定 */
+  var ROUTE_BOUNDS = [[15, 75], [54, 135]];
 
   var state = {
     view: 'map',
@@ -30,12 +32,15 @@
     cat: '',
     city: '',
     kw: '',
-    scope: 'all'
+    scope: 'all',
+    user: null,
+    route: null
   };
 
   var map = null;
   var markerLayer = null;
   var meMarker = null;
+  var routeLayer = null;
 
   /* ---------------- 工具 ---------------- */
   function $(sel) { return document.querySelector(sel); }
@@ -246,6 +251,89 @@
     var b = L.latLngBounds(list.map(function (s) { return [s.lat, s.lng]; }));
     map.fitBounds(b, { padding: [60, 60], maxZoom: 13 });
   }
+
+  /* ---------------- 应用内路线规划（不依赖任何地图账号 / 登录） ---------------- */
+  function siteById(id) {
+    return SITES.filter(function (x) { return String(x.id) === String(id); })[0];
+  }
+  function routeEstimateHtml(km) {
+    var road = km * 1.3;
+    function spd(near, mid, far) { return km < 20 ? near : (km < 100 ? mid : far); }
+    var items = [
+      { ic: '🚗', k: '驾车', v: spd(40, 65, 85), d: road },
+      { ic: '🚌', k: '公共交通', v: spd(22, 45, 60), d: road },
+      { ic: '🚲', k: '骑行', v: 15, d: km * 1.25 },
+      { ic: '🚶', k: '步行', v: 5, d: km * 1.25 }
+    ];
+    return items.map(function (x) {
+      var min = Math.max(1, Math.round(x.d / x.v * 60));
+      var t = min < 60 ? min + ' 分钟'
+        : Math.floor(min / 60) + ' 小时' + (min % 60 ? ' ' + (min % 60) + ' 分' : '');
+      return '<div class="rt-item"><span class="rt-ic">' + x.ic + '</span>' +
+        '<span class="rt-k">' + x.k + '</span><span class="rt-v">约 ' + t + '</span></div>';
+    }).join('');
+  }
+  function startRoute(id) {
+    if (!siteById(id)) return;
+    if (state.user) { enterRoute(id); return; }
+    if (!navigator.geolocation) { toast('当前浏览器不支持定位，可改用下方手机地图导航'); return; }
+    toast('正在获取您的位置…');
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      state.user = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      enterRoute(id);
+    }, function () {
+      toast('未获得定位权限，可改用下方手机地图导航');
+    }, { enableHighAccuracy: true, timeout: 8000 });
+  }
+  function enterRoute(id) {
+    state.route = { id: id };
+    if (state.view !== 'map') location.hash = '#/map';
+    else renderMap();
+  }
+  function clearRoute() {
+    state.route = null;
+    if (routeLayer && map) { map.removeLayer(routeLayer); routeLayer = null; }
+    var p = $('#route-panel'); if (p) p.hidden = true;
+    var sh = $('#sheet'), chev = $('#sheet-chevron');
+    if (sh) sh.classList.remove('collapsed');
+    if (chev) chev.textContent = '收起 ▾';
+    if (map) { map.setMaxBounds(SICHUAN_BOUNDS); applySichuanView(0); }
+    renderMap();
+  }
+  function drawRoute() {
+    if (!map) return;
+    if (routeLayer) { map.removeLayer(routeLayer); routeLayer = null; }
+    var p = $('#route-panel');
+    if (!p) return;
+    if (!state.route || !state.user) { p.hidden = true; return; }
+    var s = siteById(state.route.id);
+    if (!s) { state.route = null; p.hidden = true; return; }
+    var a = [state.user.lat, state.user.lng];
+    var b = [s.lat, s.lng];
+    routeLayer = L.layerGroup().addTo(map);
+    L.polyline([a, b], { color: '#8C1F28', weight: 4, opacity: 0.9, dashArray: '10 7' }).addTo(routeLayer);
+    L.marker(b, { icon: iconFor(s), zIndexOffset: 600 }).addTo(routeLayer);
+    /* 临时放宽视野锁定，保证省外起点也能看到完整路线 */
+    map.setMaxBounds(ROUTE_BOUNDS);
+    map.setMinZoom(2);
+    try {
+      map.fitBounds(L.latLngBounds([a, b]), { padding: [50, 50], maxZoom: 14 });
+    } catch (e) {}
+    var km = distKm(a[0], a[1], b[0], b[1]);
+    p.innerHTML =
+      '<div class="rt-head"><span class="rt-title">我的位置 → ' + esc(s.name) + '</span>' +
+      '<button id="rt-close">结束</button></div>' +
+      '<div class="rt-sub">直线距离 <b>' + distText(km) + '</b> · 时间为按常见速度估算，实际以现场导航为准</div>' +
+      '<div class="rt-grid">' + routeEstimateHtml(km) + '</div>' +
+      '<div class="rt-foot"><a href="https://uri.amap.com/navigation?to=' + s.lng + ',' + s.lat + ',' +
+        encodeURIComponent(s.name) + '&mode=car&coordinate=gaode&callnative=1" target="_blank" rel="noopener">用手机地图导航 →</a></div>';
+    p.hidden = false;
+    var c = $('#rt-close'); if (c) c.onclick = clearRoute;
+    var sh = $('#sheet'), chev = $('#sheet-chevron');
+    if (sh) sh.classList.add('collapsed');
+    if (chev) chev.textContent = '展开 ▴';
+    setTimeout(function () { if (map) map.invalidateSize(); }, 280);
+  }
   function renderChips(container, onPick) {
     container.innerHTML = '';
     CATEGORIES.forEach(function (c) {
@@ -308,6 +396,7 @@
     renderSheet();
     bindCards();
     renderLegend();
+    drawRoute();
   }
   function bindCards() {
     $all('#sheet-list .card').forEach(function (el) {
@@ -397,7 +486,6 @@
       var from = state.user ? 'from=' + state.user.lng + ',' + state.user.lat + ',' + encodeURIComponent('我的位置') + '&' : '';
       return 'https://uri.amap.com/navigation?' + from + 'to=' + s.lng + ',' + s.lat + ',' + encodeURIComponent(s.name) + '&mode=' + mode + '&policy=0&src=qingfengxunji&coordinate=gaode&callnative=1';
     };
-    var navUrl = routeUrl('car');
     var phoneBtn = s.phone ? '<a href="tel:' + String(s.phone).split(/[、,，;；]/)[0].replace(/[^\d+]/g, '') + '"><span class="da-ic">☎</span>预约咨询</a>' : '';
     var highlights = (s.highlights || []).map(function (h, i) {
       return '<div class="point"><span class="point-no">' + (i + 1) + '</span><span>' + esc(h) + '</span></div>';
@@ -412,7 +500,7 @@
         '<div class="detail-tags">' + tags + '</div>' +
       '</div>' +
       '<div class="detail-actions">' +
-        '<a href="' + navUrl + '" target="_blank" rel="noopener"><span class="da-ic">➤</span>规划路线</a>' +
+        '<button id="dv-route"><span class="da-ic">➤</span>规划路线</button>' +
         '<button id="dv-visited"><span class="da-ic">' + (visited ? '★' : '☆') + '</span>' + (visited ? '已循迹' : '标记循迹') + '</button>' +
         phoneBtn +
         '<button id="dv-copy"><span class="da-ic">⧉</span>复制地址</button>' +
@@ -437,17 +525,14 @@
         '</div>' +
         '<div class="sec-title">规划到这里的路线</div>' +
         '<div class="block">' +
-          '<div class="route-modes">' +
-            '<a class="route-mode" href="' + routeUrl('car') + '" target="_blank" rel="noopener"><span>🚗</span>驾车</a>' +
-            '<a class="route-mode" href="' + routeUrl('bus') + '" target="_blank" rel="noopener"><span>🚌</span>公交</a>' +
-            '<a class="route-mode" href="' + routeUrl('walk') + '" target="_blank" rel="noopener"><span>🚶</span>步行</a>' +
-            '<a class="route-mode" href="' + routeUrl('ride') + '" target="_blank" rel="noopener"><span>🚲</span>骑行</a>' +
+          '<button id="dv-route2" class="route-main"><span>🧭</span>在应用内规划路线</button>' +
+          '<p class="route-hint">在地图上标出「我的位置 → ' + esc(s.name) + '」的路线与距离，<b>无需登录任何地图账号</b>。</p>' +
+          '<div class="route-alt">如需真实路况导航，用手机地图打开：' +
+            '<a href="' + routeUrl('car') + '" target="_blank" rel="noopener">驾车</a>' +
+            '<a href="' + routeUrl('bus') + '" target="_blank" rel="noopener">公交</a>' +
+            '<a href="' + routeUrl('walk') + '" target="_blank" rel="noopener">步行</a>' +
+            '<a href="' + routeUrl('ride') + '" target="_blank" rel="noopener">骑行</a>' +
           '</div>' +
-          '<p class="route-hint">' +
-            (state.user
-              ? '已按您的当前位置为起点，规划到「' + esc(s.name) + '」的路线。'
-              : '将自动以您当前位置为起点，规划到「' + esc(s.name) + '」的路线（若浏览器未授权定位，可先用「复制地址」粘贴到地图 App）。') +
-          '</p>' +
         '</div>' +
         '<p class="disclaimer">本页内容依据纪委监委、政府门户及官方媒体报道整理，用于廉洁文化教育；展陈与开放信息可能调整，出行前请以场馆最新公告为准。</p>' +
       '</div>';
@@ -463,6 +548,9 @@
         navigator.clipboard.writeText(txt).then(function () { toast('地址已复制'); }, function () { fallbackCopy(txt); });
       } else { fallbackCopy(txt); }
     };
+    var rt1 = $('#dv-route'), rt2 = $('#dv-route2');
+    if (rt1) rt1.onclick = function () { startRoute(s.id); };
+    if (rt2) rt2.onclick = function () { startRoute(s.id); };
   }
   function fallbackCopy(txt) {
     var ta = document.createElement('textarea');
