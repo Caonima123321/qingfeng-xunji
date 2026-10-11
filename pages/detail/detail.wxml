@@ -97,12 +97,16 @@
     <view class="section-title">规划到这里的路线</view>
     <view class="card block">
       <view class="route-modes">
-        <view class="route-mode" bindtap="onNavigate">
+        <view class="route-mode" bindtap="onRouteInApp">
           <text class="route-mode__ic">🧭</text>
-          <text class="route-mode__t">一键规划路线</text>
+          <text class="route-mode__t">在地图上规划</text>
+        </view>
+        <view class="route-mode" bindtap="onNavigate">
+          <text class="route-mode__ic">➤</text>
+          <text class="route-mode__t">手机地图导航</text>
         </view>
       </view>
-      <text class="route-hint">点击后在微信内置地图中打开「{{site.name}}」，可直接选择驾车 / 公交 / 步行方式，规划从当前位置出发的路线。</text>
+      <text class="route-hint">「在地图上规划」在应用地图里标出从你的位置到该点位的路线，无需登录任何地图账号；「手机地图导航」打开微信内置地图，可按驾车 / 公交 / 步行做真实路况导航。</text>
     </view>
 
     <!-- 同市州其它点位 -->

@@ -39,6 +39,15 @@ Page({
     siteUtil.openLocation(this.data.site);
   },
 
+  /** 应用内路线规划：回到地图页，在本应用地图上画「我的位置 → 点位」 */
+  onRouteInApp() {
+    const site = this.data.site;
+    if (!site) return;
+    const app = getApp();
+    if (app && app.globalData) app.globalData.routeTo = site.id;
+    wx.switchTab({ url: '/pages/map/map' });
+  },
+
   /** 回到地图页并聚焦该点位 */
   onGoMap() {
     const site = this.data.site;

@@ -29,7 +29,9 @@ Page({
     scrollInto: '',
     location: null,
     locating: false,
-    userMarkerId: '__me__'
+    userMarkerId: '__me__',
+    polyline: [],
+    routeInfo: null
   },
 
   // 非渲染状态
@@ -47,6 +49,13 @@ Page({
   onShow() {
     // 从详情页返回时刷新"已循迹"标记
     this.applyFilter();
+    // 详情页点了「在地图上规划」→ 在本页地图上画路线
+    const app = getApp();
+    if (app && app.globalData && app.globalData.routeTo) {
+      const id = app.globalData.routeTo;
+      app.globalData.routeTo = null;
+      this.drawRouteTo(id);
+    }
   },
 
   onShareAppMessage() {
@@ -161,6 +170,57 @@ Page({
   moveTo(lat, lng, scale) {
     this._view = { lat: lat, lng: lng, scale: scale };
     this.setData({ center: { lat: lat, lng: lng }, scale: scale });
+  },
+
+  /* ---------------- 应用内路线规划（不依赖任何地图账号 / 登录） ---------------- */
+
+  /** 在自有地图上画出「我的位置 → 点位」的示意路线 */
+  drawRouteTo(siteId) {
+    const site = SITES.filter(function (s) { return String(s.id) === String(siteId); })[0];
+    if (!site) return;
+    const loc = this.data.location;
+    if (!loc || !loc.lat) {
+      wx.showToast({ title: '需先允许定位，已改为打开内置地图', icon: 'none' });
+      siteUtil.openLocation(site);
+      return;
+    }
+    const km = siteUtil.distanceKm(loc.lat, loc.lng, site.lat, site.lng);
+    this.setData({
+      polyline: [{
+        points: [
+          { latitude: loc.lat, longitude: loc.lng },
+          { latitude: site.lat, longitude: site.lng }
+        ],
+        color: '#8C1F28',
+        width: 5,
+        dottedLine: true,
+        arrowLine: false
+      }],
+      routeInfo: { id: site.id, name: site.name, distText: siteUtil.distanceText(km) }
+    });
+    if (this._map) {
+      this._map.includePoints({
+        points: [
+          { latitude: loc.lat, longitude: loc.lng },
+          { latitude: site.lat, longitude: site.lng }
+        ],
+        padding: [140, 60, 400, 60]
+      });
+    }
+    wx.showToast({ title: '已规划路线，虚线为示意', icon: 'none' });
+  },
+
+  clearRoute() {
+    this.setData({ polyline: [], routeInfo: null });
+    this.applyFilter();
+  },
+
+  /** 内部地图路线只作示意，真实路况导航仍走微信内置地图 */
+  onRouteNav() {
+    const info = this.data.routeInfo;
+    if (!info) return;
+    const site = SITES.filter(function (s) { return String(s.id) === String(info.id); })[0];
+    if (site) siteUtil.openLocation(site);
   },
 
   /* ---------------- 定位 ---------------- */

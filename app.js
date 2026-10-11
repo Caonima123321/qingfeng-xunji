@@ -7,7 +7,9 @@ App({
     /** 定位结果缓存 */
     location: null,
     /** 我的家乡（市州名），用于"廉洁地图·家乡"快捷入口 */
-    homeCity: HOME.city
+    homeCity: HOME.city,
+    /** 待规划路线的目标点位 id（详情页 → 地图页，应用内画路线） */
+    routeTo: null
   },
 
   onLaunch() {

@@ -259,6 +259,10 @@
   border-radius: 18rpx;
 }
 
+.route-mode + .route-mode {
+  margin-left: 16rpx;
+}
+
 .route-mode__ic {
   margin-right: 12rpx;
   font-size: 32rpx;
