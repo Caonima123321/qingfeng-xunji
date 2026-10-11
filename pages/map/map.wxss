@@ -13,6 +13,10 @@
 }
 
 /* ---------- 应用内路线规划条 ---------- */
+.fab--counts.fab--on .fab__icon {
+  color: #8C1F28;
+}
+
 .routebar {
   position: absolute;
   left: 24rpx;

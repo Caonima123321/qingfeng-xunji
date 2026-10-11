@@ -37,13 +37,15 @@
     user: null,
     route: null,
     routeId: null,
-    studyRoute: null
+    studyRoute: null,
+    counts: true          // 地图上常驻显示市州 / 区县点位计数
   };
 
   var map = null;
   var markerLayer = null;
   var meMarker = null;
   var routeLayer = null;
+  var countLayer = null;
 
   /* ---------------- 工具 ---------------- */
   function $(sel) { return document.querySelector(sel); }
@@ -219,6 +221,9 @@
     map.createPane('maskPane');
     map.getPane('maskPane').style.zIndex = 350;
     map.getPane('maskPane').style.pointerEvents = 'none';
+    /* 计数气泡专用 pane：压在圆钉之下，不挡点位点击 */
+    map.createPane('countPane');
+    map.getPane('countPane').style.zIndex = 560;
     L.control.zoom({ position: 'bottomright' }).addTo(map);
     L.tileLayer(TILE_URL, {
       subdomains: ['1', '2', '3', '4'],
@@ -226,6 +231,8 @@
       maxZoom: 18
     }).addTo(map);
     markerLayer = L.layerGroup().addTo(map);
+    /* 缩放变化时在「市州计数」与「区县计数」之间切换 */
+    map.on('zoomend', function () { renderCounts(); });
     /* 遮罩：仅显示四川省，省外区域灰化 */
     var geom = (window.QF_BOUNDARY && window.QF_BOUNDARY.features && window.QF_BOUNDARY.features[0])
       ? window.QF_BOUNDARY.features[0].geometry : null;
@@ -260,6 +267,76 @@
         icon: L.icon({ iconUrl: 'assets/marker/pin-me.png', iconSize: [20, 20], iconAnchor: [10, 10] })
       }).addTo(map);
     }
+  }
+
+  /* ---------------- 点位计数气泡：市州 / 区县（"当前有多少个展馆点位"） ---------------- */
+  var DIST_MIN_ZOOM = 10;   // 放到这一级由「市州计数」切换为「区县计数」
+
+  function shortCity(name) {
+    return String(name)
+      .replace('藏族羌族自治州', '州')
+      .replace('藏族自治州', '州')
+      .replace('彝族自治州', '州');
+  }
+  function bubbleHtml(label, n, on) {
+    return '<div class="count-bubble' + (on ? ' on' : '') + '"><b>' + esc(label) + '</b><i>' + n + '</i></div>';
+  }
+  function addBubble(lat, lng, html, onClick) {
+    var m = L.marker([lat, lng], {
+      pane: 'countPane',
+      icon: L.divIcon({ className: 'count-wrap', html: html, iconSize: [0, 0] }),
+      keyboard: false
+    });
+    m.on('click', onClick);
+    return m;
+  }
+  function renderCounts() {
+    if (!map) return;
+    if (countLayer) { map.removeLayer(countLayer); countLayer = null; }
+    if (!state.counts) return;
+    countLayer = L.layerGroup();
+
+    var list = filtered();
+    var byDistrict = !!state.city || map.getZoom() >= DIST_MIN_ZOOM;
+
+    if (byDistrict) {
+      /* 区县级：同一区县的点位聚合成一个气泡 */
+      var groups = {}, order = [];
+      list.forEach(function (s) {
+        var key = s.city + '|' + (s.district || '市辖区');
+        if (!groups[key]) {
+          groups[key] = { label: s.district || shortCity(s.city), city: s.city, n: 0, lat: 0, lng: 0 };
+          order.push(key);
+        }
+        groups[key].n += 1;
+        groups[key].lat += s.lat;
+        groups[key].lng += s.lng;
+      });
+      order.forEach(function (k) {
+        var g = groups[k];
+        (function (gg) {
+          countLayer.addLayer(addBubble(gg.lat / gg.n, gg.lng / gg.n, bubbleHtml(gg.label, gg.n, false), function () {
+            state.city = gg.city;
+            renderMap();
+            toast('已筛选：' + gg.label + '（' + gg.n + ' 处）');
+          }));
+        })(g);
+      });
+    } else {
+      /* 市州级：全省 21 个市州各显示当前点位数量 */
+      CITIES.forEach(function (c) {
+        var n = 0;
+        SITES.forEach(function (s) { if (s.city === c.name) n += 1; });
+        if (!n) return;
+        (function (cc, nn) {
+          countLayer.addLayer(addBubble(cc.lat, cc.lng, bubbleHtml(shortCity(cc.name), nn, state.city === cc.name), function () {
+            state.city = state.city === cc.name ? '' : cc.name;
+            renderMap();
+          }));
+        })(c, n);
+      });
+    }
+    countLayer.addTo(map);
   }
   function fitList(list) {
     if (!list.length) return;
@@ -602,6 +679,7 @@
     initMap();
     renderChips($('#chips'), function () { renderMap(); });
     renderMarkers();
+    renderCounts();
     renderSheet();
     bindCards();
     renderLegend();
@@ -895,6 +973,16 @@
       l.hidden = !open;
       $('#legend-label').textContent = open ? '要素图例 ▴' : '要素图例 ▾';
     };
+    /* 点位计数开关（市州 / 区县） */
+    var btnCounts = $('#btn-counts');
+    if (btnCounts) {
+      btnCounts.onclick = function () {
+        state.counts = !state.counts;
+        btnCounts.classList.toggle('on', state.counts);
+        $('#counts-label').textContent = state.counts ? '📍 点位计数 ✓' : '📍 点位计数 ✕';
+        renderCounts();
+      };
+    }
     /* 底部面板收起 / 展开，便于看全四川 */
     var sheetToggle = $('#sheet-toggle');
     if (sheetToggle) {

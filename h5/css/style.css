@@ -124,10 +124,33 @@ input { font-family: inherit; }
   box-shadow: 0 2px 8px rgba(0,0,0,.1); font-size: 12px; color: var(--primary);
 }
 .legend {
-  position: absolute; right: 12px; top: 208px;
+  position: absolute; right: 12px; top: 244px;
   z-index: 500; width: 230px; background: #fff; border-radius: 12px; padding: 8px 12px;
   box-shadow: 0 6px 20px rgba(0,0,0,.14);
 }
+
+/* 点位计数开关 + 地图计数气泡 */
+.count-toggle {
+  position: absolute; right: 12px; top: 208px;
+  z-index: 500; height: 30px; padding: 0 12px; border-radius: 15px; border: 1px solid #EAE3D6;
+  background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.1); font-size: 12px; color: var(--ink-3);
+}
+.count-toggle.on { color: var(--primary); border-color: #EFD9DA; }
+.count-wrap { background: none; border: none; }
+.count-bubble {
+  position: absolute; left: 0; top: 0; transform: translate(-50%, -50%);
+  display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+  padding: 3px 9px; border-radius: 999px;
+  background: rgba(255,255,255,.95); border: 1px solid #E4DACB;
+  box-shadow: 0 2px 8px rgba(0,0,0,.16);
+  font-size: 11px; line-height: 1.55; color: #2B2B2B; cursor: pointer;
+}
+.count-bubble b { font-weight: 600; }
+.count-bubble i { font-style: normal; font-size: 10px; padding: 0 5px; border-radius: 999px; background: var(--primary); color: #fff; }
+.count-bubble.on { background: var(--primary); border-color: var(--primary); color: #fff; }
+.count-bubble.on i { background: #fff; color: var(--primary); }
+#view-map .leaflet-marker-icon.count-wrap:hover .count-bubble { background: var(--primary); border-color: var(--primary); color: #fff; }
+#view-map .leaflet-marker-icon.count-wrap:hover .count-bubble i { background: #fff; color: var(--primary); }
 .legend-row { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; }
 .legend-dot { width: 12px; height: 12px; border-radius: 50%; margin-top: 4px; flex: none; }
 .legend-name { font-size: 12px; color: var(--ink); display: block; }

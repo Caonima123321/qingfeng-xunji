@@ -30,6 +30,74 @@ function resolveStations(route) {
   });
 }
 
+/* ---------------- 点位计数气泡：市州 / 区县（"当前有多少个展馆点位"） ---------------- */
+const COUNT_ID_BASE = 900000;   // 计数 marker 的 id 起始值，与点位 id 区分
+const DIST_MIN_SCALE = 11;      // 放到这一级由「市州计数」切换为「区县计数」
+
+function countMarker(id, lat, lng, label, n, on) {
+  return {
+    id: id,
+    latitude: lat,
+    longitude: lng,
+    iconPath: '/assets/marker/pin-count.png',
+    width: 1,
+    height: 1,
+    zIndex: on ? 4 : 1,
+    label: {
+      content: label + '  ' + n,
+      color: on ? '#FFFFFF' : '#2B2B2B',
+      fontSize: 11,
+      bgColor: on ? '#8C1F28' : '#FFFFFF',
+      borderColor: '#8C1F28',
+      borderWidth: 1,
+      borderRadius: 10,
+      padding: 5,
+      textAlign: 'center',
+      anchorX: -34,
+      anchorY: -11
+    }
+  };
+}
+
+/** 生成计数气泡 markers 以及 id → 市州 的映射 */
+function buildCountMarkers(list, cityFilter, scale) {
+  const markers = [];
+  const cityOf = {};
+  const byDistrict = !!cityFilter || (scale || 0) >= DIST_MIN_SCALE;
+
+  if (byDistrict) {
+    /* 区县级：同一区县的点位聚合成一个气泡 */
+    const groups = {}, order = [];
+    (list || []).forEach(function (s) {
+      const k = s.city + '|' + (s.district || '市辖区');
+      if (!groups[k]) {
+        groups[k] = { label: s.district || shortCity(s.city), city: s.city, n: 0, lat: 0, lng: 0 };
+        order.push(k);
+      }
+      groups[k].n += 1;
+      groups[k].lat += s.lat;
+      groups[k].lng += s.lng;
+    });
+    order.forEach(function (k, i) {
+      const g = groups[k];
+      const id = COUNT_ID_BASE + 100 + i;
+      cityOf[id] = g.city;
+      markers.push(countMarker(id, g.lat / g.n, g.lng / g.n, g.label, g.n, false));
+    });
+  } else {
+    /* 市州级：21 个市州各显示当前点位数量 */
+    CITIES.forEach(function (c, i) {
+      let n = 0;
+      SITES.forEach(function (s) { if (s.city === c.name) n += 1; });
+      if (!n) return;
+      const id = COUNT_ID_BASE + i;
+      cityOf[id] = c.name;
+      markers.push(countMarker(id, c.lat, c.lng, shortCity(c.name), n, cityFilter === c.name));
+    });
+  }
+  return { markers: markers, cityOf: cityOf };
+}
+
 Page({
   data: {
     home: HOME,
@@ -51,7 +119,8 @@ Page({
     locating: false,
     userMarkerId: '__me__',
     polyline: [],
-    routeInfo: null
+    routeInfo: null,
+    counts: true
   },
 
   // 非渲染状态
@@ -147,12 +216,36 @@ Page({
         .sort(function (a, b) { return a._dist - b._dist; });
     }
 
+    const countRes = this.data.counts
+      ? buildCountMarkers(list, city, this._view.scale)
+      : { markers: [], cityOf: {} };
+    this._countCity = countRes.cityOf;
+
     this.setData({
       filtered: list,
-      markers: this.decorate(siteUtil.buildMarkers(list, this.data.activeId))
+      markers: countRes.markers.concat(this.decorate(siteUtil.buildMarkers(list, this.data.activeId)))
     });
     this.buildCategories();
     this.fitToList(list);
+  },
+
+  /** 只重建 marker（含计数气泡），不动视野 */
+  refreshMarkers() {
+    const list = this.data.filtered;
+    const countRes = this.data.counts
+      ? buildCountMarkers(list, this.data.cityFilter, this._view.scale)
+      : { markers: [], cityOf: {} };
+    this._countCity = countRes.cityOf;
+    this.setData({
+      markers: countRes.markers.concat(this.decorate(siteUtil.buildMarkers(list, this.data.activeId)))
+    });
+  },
+
+  /** 计数气泡开关 */
+  toggleCounts() {
+    const on = !this.data.counts;
+    this.setData({ counts: on }, this.refreshMarkers);
+    wx.showToast({ title: on ? '已显示市州 / 区县点位计数' : '已隐藏点位计数', icon: 'none' });
   },
 
   /** 在点位 marker 之上附加"我的位置"marker */
@@ -361,6 +454,13 @@ Page({
   onMarkerTap(e) {
     const id = e.detail.markerId;
     if (id === this.data.userMarkerId) return;
+    /* 计数气泡：点市州 → 筛选并下钻区县；点区县 → 筛选该市州 */
+    if (typeof id === 'number' && id >= COUNT_ID_BASE) {
+      const city = (this._countCity || {})[id];
+      if (!city) return;
+      this.setData({ cityFilter: this.data.cityFilter === city ? '' : city }, this.applyFilter);
+      return;
+    }
     const hit = this.data.filtered.find(function (s) { return String(s.id) === String(id); });
     if (!hit) return;
     this.setData({
@@ -381,11 +481,17 @@ Page({
 
   onRegionChange(e) {
     if (e.type !== 'end' || !e.detail || !e.detail.centerLocation) return;
+    const prev = this._view.scale;
+    const next = e.detail.scale;
     this._view = {
       lat: e.detail.centerLocation.latitude,
       lng: e.detail.centerLocation.longitude,
-      scale: e.detail.scale
+      scale: next
     };
+    /* 跨过「市州计数 / 区县计数」分界时重建气泡（不动视野） */
+    if (this.data.counts && (prev < DIST_MIN_SCALE) !== (next < DIST_MIN_SCALE)) {
+      this.refreshMarkers();
+    }
   },
 
   onCategoryTap(e) {

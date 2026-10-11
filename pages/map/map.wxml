@@ -30,6 +30,10 @@
         <text class="fab__icon">{{locating ? '…' : '◎'}}</text>
         <text class="fab__txt">定位</text>
       </view>
+      <view class="fab fab--counts {{counts ? 'fab--on' : ''}}" bindtap="toggleCounts">
+        <text class="fab__icon">🔢</text>
+        <text class="fab__txt">计数</text>
+      </view>
       <view class="fab fab--route" bindtap="goRoute">
         <text class="fab__icon">🧭</text>
         <text class="fab__txt">路线</text>
