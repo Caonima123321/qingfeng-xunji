@@ -242,6 +242,42 @@
   color: #A29A8C;
 }
 
+/* ---------- 规划到这里的路线 ---------- */
+.route-modes {
+  display: flex;
+  margin-bottom: 18rpx;
+}
+
+.route-mode {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24rpx 0;
+  background: #FBF7EE;
+  border: 1rpx solid #EAE3D6;
+  border-radius: 18rpx;
+}
+
+.route-mode__ic {
+  margin-right: 12rpx;
+  font-size: 32rpx;
+  line-height: 1;
+}
+
+.route-mode__t {
+  font-size: 27rpx;
+  color: #8C1F28;
+  font-weight: 600;
+}
+
+.route-hint {
+  display: block;
+  font-size: 22rpx;
+  line-height: 1.7;
+  color: #8A8A8A;
+}
+
 .notfound {
   padding: 220rpx 60rpx;
   text-align: center;

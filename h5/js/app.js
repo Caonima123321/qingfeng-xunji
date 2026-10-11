@@ -393,7 +393,11 @@
       (s.categories || []).map(function (c) { return '<span class="badge">' + esc(c) + '</span>'; }).join('');
     var tags = (s.tags || []).map(function (t) { return '<span class="tag">#' + esc(t) + '</span>'; }).join('');
     var visited = isVisited(s.id);
-    var navUrl = 'https://uri.amap.com/marker?position=' + s.lng + ',' + s.lat + '&name=' + encodeURIComponent(s.name) + '&coordinate=gaode&callnative=1';
+    var routeUrl = function (mode) {
+      var from = state.user ? 'from=' + state.user.lng + ',' + state.user.lat + ',' + encodeURIComponent('我的位置') + '&' : '';
+      return 'https://uri.amap.com/navigation?' + from + 'to=' + s.lng + ',' + s.lat + ',' + encodeURIComponent(s.name) + '&mode=' + mode + '&policy=0&src=qingfengxunji&coordinate=gaode&callnative=1';
+    };
+    var navUrl = routeUrl('car');
     var phoneBtn = s.phone ? '<a href="tel:' + String(s.phone).split(/[、,，;；]/)[0].replace(/[^\d+]/g, '') + '"><span class="da-ic">☎</span>预约咨询</a>' : '';
     var highlights = (s.highlights || []).map(function (h, i) {
       return '<div class="point"><span class="point-no">' + (i + 1) + '</span><span>' + esc(h) + '</span></div>';
@@ -408,7 +412,7 @@
         '<div class="detail-tags">' + tags + '</div>' +
       '</div>' +
       '<div class="detail-actions">' +
-        '<a href="' + navUrl + '" target="_blank" rel="noopener"><span class="da-ic">➤</span>导航前往</a>' +
+        '<a href="' + navUrl + '" target="_blank" rel="noopener"><span class="da-ic">➤</span>规划路线</a>' +
         '<button id="dv-visited"><span class="da-ic">' + (visited ? '★' : '☆') + '</span>' + (visited ? '已循迹' : '标记循迹') + '</button>' +
         phoneBtn +
         '<button id="dv-copy"><span class="da-ic">⧉</span>复制地址</button>' +
@@ -430,6 +434,20 @@
           '<div class="kv"><span class="kv-k">预约电话</span><span class="kv-v">' + esc(s.phone || '暂未收录，建议联系当地纪委监委或文旅部门') + '</span></div>' +
           '<div class="kv"><span class="kv-k">适合对象</span><span class="kv-v">党员干部主题党日 · 师生研学 · 社会公众</span></div>' +
           '<div class="kv"><span class="kv-k">坐标置信度</span><span class="kv-v">' + (s.verify === 'verified' ? '已核实（官方地址）' : '据地址估算，出发前请再确认') + '</span></div>' +
+        '</div>' +
+        '<div class="sec-title">规划到这里的路线</div>' +
+        '<div class="block">' +
+          '<div class="route-modes">' +
+            '<a class="route-mode" href="' + routeUrl('car') + '" target="_blank" rel="noopener"><span>🚗</span>驾车</a>' +
+            '<a class="route-mode" href="' + routeUrl('bus') + '" target="_blank" rel="noopener"><span>🚌</span>公交</a>' +
+            '<a class="route-mode" href="' + routeUrl('walk') + '" target="_blank" rel="noopener"><span>🚶</span>步行</a>' +
+            '<a class="route-mode" href="' + routeUrl('ride') + '" target="_blank" rel="noopener"><span>🚲</span>骑行</a>' +
+          '</div>' +
+          '<p class="route-hint">' +
+            (state.user
+              ? '已按您的当前位置为起点，规划到「' + esc(s.name) + '」的路线。'
+              : '将自动以您当前位置为起点，规划到「' + esc(s.name) + '」的路线（若浏览器未授权定位，可先用「复制地址」粘贴到地图 App）。') +
+          '</p>' +
         '</div>' +
         '<p class="disclaimer">本页内容依据纪委监委、政府门户及官方媒体报道整理，用于廉洁文化教育；展陈与开放信息可能调整，出行前请以场馆最新公告为准。</p>' +
       '</div>';

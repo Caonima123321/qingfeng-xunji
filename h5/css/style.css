@@ -274,6 +274,16 @@ input { font-family: inherit; }
 .kv { display: flex; margin-top: 11px; padding-top: 11px; border-top: 1px solid #F4F0E7; font-size: 13px; }
 .kv-k { flex: none; width: 82px; color: var(--ink-3); }
 .kv-v { flex: 1; color: var(--ink); }
+/* 规划到这里的路线 */
+.route-modes { display: flex; gap: 9px; }
+.route-mode {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px;
+  padding: 11px 0 9px; background: #FBF7EE; border: 1px solid var(--line);
+  border-radius: 12px; font-size: 12px; color: var(--ink-2); text-decoration: none;
+}
+.route-mode span { font-size: 20px; line-height: 1; }
+.route-mode:active { background: #F2E9DF; border-color: var(--primary); color: var(--primary); }
+.route-hint { margin: 10px 0 0; font-size: 12px; color: var(--ink-3); line-height: 1.65; }
 .point { display: flex; gap: 9px; padding: 7px 0; font-size: 13px; line-height: 1.6; color: #3A3A3A; }
 .point-no { flex: none; width: 20px; height: 20px; border-radius: 50%; background: #F7EDEC; color: var(--primary); font-size: 11px; text-align: center; line-height: 20px; }
 .quote { margin-top: 14px; padding: 15px 15px 15px 22px; background: linear-gradient(135deg, #FBF5E4, #F7EDEC); border-left: 4px solid var(--gold); border-radius: 0 12px 12px 0; font-size: 15px; color: #6B4A00; font-weight: 600; line-height: 1.7; }

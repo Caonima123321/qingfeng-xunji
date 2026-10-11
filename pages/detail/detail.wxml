@@ -16,7 +16,7 @@
   <view class="actions">
     <view class="action" bindtap="onNavigate">
       <text class="action__icon">➤</text>
-      <text class="action__txt">导航前往</text>
+      <text class="action__txt">规划路线</text>
     </view>
     <view class="action" bindtap="onGoMap">
       <text class="action__icon">🗺</text>
@@ -91,6 +91,18 @@
         <text class="kv__k">坐标置信度</text>
         <text class="kv__v">{{site.verify === 'verified' ? '已核实（官方地址）' : '据地址估算，出发前请再确认'}}</text>
       </view>
+    </view>
+
+    <!-- 规划到这里的路线 -->
+    <view class="section-title">规划到这里的路线</view>
+    <view class="card block">
+      <view class="route-modes">
+        <view class="route-mode" bindtap="onNavigate">
+          <text class="route-mode__ic">🧭</text>
+          <text class="route-mode__t">一键规划路线</text>
+        </view>
+      </view>
+      <text class="route-hint">点击后在微信内置地图中打开「{{site.name}}」，可直接选择驾车 / 公交 / 步行方式，规划从当前位置出发的路线。</text>
     </view>
 
     <!-- 同市州其它点位 -->
