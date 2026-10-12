@@ -55,6 +55,49 @@
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   }
+  /* ---------------- 馆藏级线描图标库（24×24 网格 · 1.7 描边 · 随 currentColor 着色） ---------------- */
+  var ICON = {
+    map: '<path d="M9 3.6 3.4 6.2v14.2L9 17.8l6 2.6 5.6-2.6V3.6L15 6.2z"/><path d="M9 3.6v14.2M15 6.2v14.2"/>',
+    list: '<circle cx="5.2" cy="7" r="1.3"/><circle cx="5.2" cy="12" r="1.3"/><circle cx="5.2" cy="17" r="1.3"/><path d="M9.6 7h9.2M9.6 12h9.2M9.6 17h5.6"/>',
+    route: '<path d="M7 17.6c4.8 0 3.6-11.2 9.8-11.2"/><circle cx="5.4" cy="17.6" r="2.2"/><circle cx="18.6" cy="6.4" r="2.2"/>',
+    search: '<circle cx="10.6" cy="10.6" r="6.2"/><path d="m15.2 15.2 5 5"/>',
+    locate: '<circle cx="12" cy="12" r="6.8"/><circle cx="12" cy="12" r="1.9"/><path d="M12 2.4v3M12 18.6v3M2.4 12h3M18.6 12h3"/>',
+    home: '<path d="M3.6 11.2 12 4l8.4 7.2"/><path d="M6.2 10.2v10.2h11.6V10.2"/><path d="M10 20.4v-5.6h4v5.6"/>',
+    compass: '<circle cx="12" cy="12" r="9"/><path d="m15.6 8.4-2 5.2-5.2 2 2-5.2z"/>',
+    layers: '<path d="m12 3.2 8.8 4.8L12 12.8 3.2 8z"/><path d="m3.2 12.8 8.8 4.8 8.8-4.8"/>',
+    pin: '<path d="M12 21.2s6.8-6.2 6.8-11.2a6.8 6.8 0 1 0-13.6 0c0 5 6.8 11.2 6.8 11.2z"/><circle cx="12" cy="10" r="2.5"/>',
+    down: '<path d="m5.6 9.2 6.4 6.4 6.4-6.4"/>',
+    up: '<path d="m5.6 14.8 6.4-6.4 6.4 6.4"/>',
+    left: '<path d="M15 4.8 7.8 12l7.2 7.2"/>',
+    right: '<path d="M9 4.8 16.2 12 9 19.2"/>',
+    arrow: '<path d="M4.4 12h14.6M13.4 6.4 19 12l-5.6 5.6"/>',
+    navigate: '<path d="M20.4 3.6 3.6 10.4l6.4 2.8 2.8 6.4z"/><path d="m10 13.2 4.6-4.6"/>',
+    check: '<circle cx="12" cy="12" r="8.4"/><path d="m8.5 12.3 2.5 2.5 4.6-5.2"/>',
+    phone: '<path d="M7.2 3.8H4.6A1.7 1.7 0 0 0 2.9 5.6c.5 8.2 7.3 15 15.5 15.5a1.7 1.7 0 0 0 1.8-1.7v-2.6l-4.4-1.6-1.7 2.2a13.9 13.9 0 0 1-5.8-5.8l2.2-1.7z"/>',
+    copy: '<rect x="9" y="9" width="11.4" height="11.4" rx="2.4"/><path d="M15.6 6.4V4.9a2.4 2.4 0 0 0-2.4-2.4H4.9a2.4 2.4 0 0 0-2.4 2.4v8.3a2.4 2.4 0 0 0 2.4 2.4h1.5"/>',
+    car: '<path d="M4.6 15.6h14.8v2.6H4.6z"/><path d="M6.4 15.6V12l1.7-4.2h7.8L17.6 12v3.6"/><circle cx="7.8" cy="18.6" r="1.6"/><circle cx="16.2" cy="18.6" r="1.6"/>',
+    bus: '<rect x="5" y="3.6" width="14" height="12.8" rx="2.4"/><path d="M5 11h14"/><path d="M8.4 7.4h7.2"/><circle cx="8.4" cy="18.6" r="1.5"/><circle cx="15.6" cy="18.6" r="1.5"/>',
+    bike: '<circle cx="6.2" cy="16.6" r="3.4"/><circle cx="17.8" cy="16.6" r="3.4"/><path d="m9.6 16.6 3.4-7.4h3"/><path d="M13 9.2h3.4l1.4 4.6"/><path d="M14.6 5.8h2.6"/>',
+    walk: '<circle cx="13.4" cy="4.8" r="1.8"/><path d="m11.8 9.4 3.2 1.4 1.2 4"/><path d="m13.8 10.8-3.2 3.4.8 6"/><path d="M9.2 20.6 9.8 14l-2.2-2.6"/>'
+  };
+  function ic(name, cls) {
+    var body = ICON[name];
+    if (!body) return '';
+    return '<svg class="ic' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" stroke-width="1.7" ' +
+      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + body + '</svg>';
+  }
+  /* 底部面板的「收起 / 展开」文字 + 箭头图标 */
+  function chevronLabel(collapsed) {
+    return (collapsed ? '展开 ' : '收起 ') + ic(collapsed ? 'up' : 'down', 'ic-sm');
+  }
+  /* 把静态 HTML 里的 <span data-icon="xxx"> 填成图标 */
+  function paintIcons() {
+    $all('[data-icon]').forEach(function (el) {
+      var n = el.getAttribute('data-icon');
+      if (n) el.innerHTML = ic(n, el.getAttribute('data-icon-cls') || '');
+    });
+  }
+
   function toast(msg) {
     var t = document.createElement('div');
     t.className = 'toast';
@@ -64,7 +107,7 @@
   }
   function catColor(site) {
     var hit = CATEGORIES.filter(function (c) { return (site.categories || []).indexOf(c.key) > -1; })[0];
-    return hit ? hit.color : '#96232E';
+    return hit ? hit.color : '#9C2B26';
   }
   function distKm(lat1, lng1, lat2, lng2) {
     var R = 6371, toRad = function (d) { return d * Math.PI / 180; };
@@ -187,9 +230,9 @@
     var outer = MASK_OUTER.concat([MASK_OUTER[0]]);
     return L.polygon([outer].concat(rings), {
       pane: 'maskPane',
-      fillColor: '#F0EBE0',
+      fillColor: '#E7DDC7',
       fillOpacity: 1,
-      color: '#96232E',
+      color: '#9C2B26',
       weight: 2,
       opacity: 1,
       fillRule: 'evenodd',
@@ -248,8 +291,7 @@
   function popupHtml(s) {
     return '<div class="lp-name">' + esc(s.name) + '</div>' +
       '<div class="lp-meta">' + esc(s.city + (s.district ? ' · ' + s.district : '')) + '</div>' +
-      '<a class="lp-btn" href="#/detail/' + encodeURIComponent(s.id) + '">查看详情 →</a>';
-  }
+      '<a class="lp-btn" href="#/detail/' + encodeURIComponent(s.id) + '">查看详情 →</a>';  }
   function renderMarkers() {
     markerLayer.clearLayers();
     var list = filtered();
@@ -367,10 +409,48 @@
     }).join('');
     var dots = SITES.map(function (s) {
       var q = px(s.lng, s.lat);
-      return '<circle cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) + '" r="2" fill="#96232E" opacity=".5"/>';
+      return '<circle cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) + '" r="2" fill="#9C2B26" opacity=".5"/>';
     }).join('');
     return '<svg viewBox="0 0 ' + w + ' ' + h + '" class="cover-svg" preserveAspectRatio="xMidYMid meet">' +
-      '<path d="' + d + '" fill="#F7F0E5" stroke="#96232E" stroke-width="1.3" stroke-linejoin="round"/>' + dots + '</svg>';
+      '<path d="' + d + '" fill="#F6EFE0" stroke="#9C2B26" stroke-width="1.3" stroke-linejoin="round"/>' + dots + '</svg>';
+  }
+  /* 封面主视觉：程序生成的水墨山水（不依赖任何图片资源，离线也能显示） */
+  function inkBackdrop() {
+    return '<svg class="cover-art" viewBox="0 0 390 470" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' +
+      '<defs>' +
+        '<linearGradient id="qfSky" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0" stop-color="#B8A47C"/><stop offset=".42" stop-color="#D6C6A0"/>' +
+          '<stop offset="1" stop-color="#EBE0C6"/></linearGradient>' +
+        '<linearGradient id="qfFar" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0" stop-color="#7C6B4C" stop-opacity=".66"/>' +
+          '<stop offset="1" stop-color="#B6A583" stop-opacity=".3"/></linearGradient>' +
+        '<linearGradient id="qfMid" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0" stop-color="#57492F" stop-opacity=".78"/>' +
+          '<stop offset="1" stop-color="#93815E" stop-opacity=".36"/></linearGradient>' +
+        '<linearGradient id="qfNear" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0" stop-color="#332B1E" stop-opacity=".9"/>' +
+          '<stop offset="1" stop-color="#5E5238" stop-opacity=".5"/></linearGradient>' +
+        '<radialGradient id="qfSun" cx=".5" cy=".5" r=".5">' +
+          '<stop offset="0" stop-color="#F6EAC8" stop-opacity=".85"/>' +
+          '<stop offset="1" stop-color="#F6EAC8" stop-opacity="0"/></radialGradient>' +
+      '</defs>' +
+      '<rect width="390" height="470" fill="url(#qfSky)"/>' +
+      '<circle cx="288" cy="108" r="62" fill="url(#qfSun)"/>' +
+      '<circle cx="288" cy="108" r="25" fill="#F0E1BA" opacity=".7"/>' +
+      '<path d="M0 272 52 216 96 250 146 190 200 254 250 214 300 256 348 222 390 260V470H0z" fill="url(#qfFar)"/>' +
+      '<path d="M0 312 46 264 92 304 138 250 194 312 240 274 292 316 338 278 390 318V470H0z" fill="url(#qfMid)"/>' +
+      '<path d="M0 358 56 320 110 362 166 316 224 364 278 328 334 366 390 334V470H0z" fill="url(#qfNear)"/>' +
+      '<rect x="0" y="264" width="390" height="32" fill="#EFE4C9" opacity=".38"/>' +
+      '<rect x="0" y="316" width="390" height="22" fill="#EFE4C9" opacity=".28"/>' +
+      '<rect x="0" y="372" width="390" height="26" fill="#EFE4C9" opacity=".22"/>' +
+      '<g fill="none" stroke="#3E3524" stroke-opacity=".4" stroke-width="2" stroke-linecap="round">' +
+        '<path d="M392 448c-26-6-45-22-53-45 16 9 30 11 45 9"/>' +
+        '<path d="M392 418c-18-4-31-14-37-30 11 7 21 9 32 8"/>' +
+      '</g>' +
+      '<g fill="none" stroke="#5C5039" stroke-opacity=".48" stroke-width="1.6" stroke-linecap="round">' +
+        '<path d="M118 138c5-5 9-5 14 0M142 124c5-5 9-5 14 0"/>' +
+      '</g>' +
+      '</svg>';
   }
   function renderCover() {
     var box = $('#cover-body');
@@ -385,12 +465,15 @@
         '</button>';
     }).join('');
     box.innerHTML =
-      '<div class="cover-hero">' +
-        '<div class="cover-hero__mark">廉</div>' +
-        '<div class="cover-hero__title">清风循迹</div>' +
-        '<div class="cover-hero__sub">廉洁文化地图 · 四川省</div>' +
-        '<div class="cover-hero__line"></div>' +
-        '<div class="cover-hero__tag">以史为鉴 · 以廉润心</div>' +
+      '<div class="cover-hero">' + inkBackdrop() +
+        '<div class="cover-hero__vtext">' + CITIES.length + ' 个市州<br>' + SITES.length + ' 处点位<br>' +
+          CATEGORIES.length + ' 大廉洁要素</div>' +
+        '<div class="cover-hero__foot">' +
+          '<div class="cover-hero__title">清风循迹</div>' +
+          '<div class="cover-hero__line"></div>' +
+          '<div class="cover-hero__sub">四川省廉洁文化地图</div>' +
+        '</div>' +
+        '<div class="cover-hero__seal">廉</div>' +
       '</div>' +
       '<div class="cover-main">' +
         '<div class="cover-card">' +
@@ -459,7 +542,7 @@
         '<div class="rs-body"><span class="rs-name">' + esc(st.name) + '</span>' +
         '<span class="rs-meta">' + esc(st.kind) + (st.note ? ' · ' + esc(st.note) : '') + '</span></div>' +
         '<span class="rs-leg">' + (i === 0 ? '起点' : '↑ ' + distText(legs[i - 1])) + '</span>' +
-        (st.id ? '<a class="rs-go" href="#/detail/' + encodeURIComponent(st.id) + '">›</a>' : '') +
+        (st.id ? '<a class="rs-go" href="#/detail/' + encodeURIComponent(st.id) + '">' + ic('right', 'ic-sm') + '</a>' : '') +
         '</div>';
     }).join('');
     box.innerHTML =
@@ -497,7 +580,7 @@
     miniMap = L.map('route-mini', { zoomControl: false, attributionControl: false, scrollWheelZoom: false });
     L.tileLayer(TILE_URL, { subdomains: ['1', '2', '3', '4'], maxZoom: 18 }).addTo(miniMap);
     var pts = stops.map(function (s) { return [s.lat, s.lng]; });
-    L.polyline(pts, { color: '#96232E', weight: 4, opacity: .85, dashArray: '9 7' }).addTo(miniMap);
+    L.polyline(pts, { color: '#9C2B26', weight: 4, opacity: .85, dashArray: '9 7' }).addTo(miniMap);
     stops.forEach(function (s, i) {
       L.marker([s.lat, s.lng], { icon: stopIcon(i + 1) }).addTo(miniMap)
         .bindPopup('<b>' + esc(s.name) + '</b><br>' + esc(s.kind));
@@ -514,16 +597,16 @@
     var road = km * 1.3;
     function spd(near, mid, far) { return km < 20 ? near : (km < 100 ? mid : far); }
     var items = [
-      { ic: '🚗', k: '驾车', v: spd(40, 65, 85), d: road },
-      { ic: '🚌', k: '公共交通', v: spd(22, 45, 60), d: road },
-      { ic: '🚲', k: '骑行', v: 15, d: km * 1.25 },
-      { ic: '🚶', k: '步行', v: 5, d: km * 1.25 }
+      { ic: 'car', k: '驾车', v: spd(40, 65, 85), d: road },
+      { ic: 'bus', k: '公共交通', v: spd(22, 45, 60), d: road },
+      { ic: 'bike', k: '骑行', v: 15, d: km * 1.25 },
+      { ic: 'walk', k: '步行', v: 5, d: km * 1.25 }
     ];
     return items.map(function (x) {
       var min = Math.max(1, Math.round(x.d / x.v * 60));
       var t = min < 60 ? min + ' 分钟'
         : Math.floor(min / 60) + ' 小时' + (min % 60 ? ' ' + (min % 60) + ' 分' : '');
-      return '<div class="rt-item"><span class="rt-ic">' + x.ic + '</span>' +
+      return '<div class="rt-item"><span class="rt-ic">' + ic(x.ic, 'ic-sm') + '</span>' +
         '<span class="rt-k">' + x.k + '</span><span class="rt-v">约 ' + t + '</span></div>';
     }).join('');
   }
@@ -551,7 +634,7 @@
     var p = $('#route-panel'); if (p) p.hidden = true;
     var sh = $('#sheet'), chev = $('#sheet-chevron');
     if (sh) sh.classList.remove('collapsed');
-    if (chev) chev.textContent = '收起 ▾';
+    if (chev) chev.innerHTML = chevronLabel(false);
     if (map) { map.setMaxBounds(SICHUAN_BOUNDS); applySichuanView(0); }
     renderMap();
   }
@@ -572,7 +655,7 @@
         total += distKm(stops[i - 1].lat, stops[i - 1].lng, stops[i].lat, stops[i].lng);
       }
       routeLayer = L.layerGroup().addTo(map);
-      L.polyline(pts, { color: '#96232E', weight: 4, opacity: 0.9, dashArray: '9 7' }).addTo(routeLayer);
+      L.polyline(pts, { color: '#9C2B26', weight: 4, opacity: 0.9, dashArray: '9 7' }).addTo(routeLayer);
       stops.forEach(function (x, i) {
         L.marker([x.lat, x.lng], { icon: stopIcon(i + 1), zIndexOffset: 600 }).addTo(routeLayer);
       });
@@ -587,7 +670,7 @@
       var rc = $('#rt-close'); if (rc) rc.onclick = clearRoute;
       var sh2 = $('#sheet'), ch2 = $('#sheet-chevron');
       if (sh2) sh2.classList.add('collapsed');
-      if (ch2) ch2.textContent = '展开 ▴';
+      if (ch2) ch2.innerHTML = chevronLabel(true);
       setTimeout(function () { if (map) map.invalidateSize(); }, 280);
       return;
     }
@@ -597,7 +680,7 @@
     var a = [state.user.lat, state.user.lng];
     var b = [s.lat, s.lng];
     routeLayer = L.layerGroup().addTo(map);
-    L.polyline([a, b], { color: '#96232E', weight: 4, opacity: 0.9, dashArray: '10 7' }).addTo(routeLayer);
+    L.polyline([a, b], { color: '#9C2B26', weight: 4, opacity: 0.9, dashArray: '10 7' }).addTo(routeLayer);
     L.marker(b, { icon: iconFor(s), zIndexOffset: 600 }).addTo(routeLayer);
     /* 临时放宽视野锁定，保证省外起点也能看到完整路线 */
     map.setMaxBounds(ROUTE_BOUNDS);
@@ -617,7 +700,7 @@
     var c = $('#rt-close'); if (c) c.onclick = clearRoute;
     var sh = $('#sheet'), chev = $('#sheet-chevron');
     if (sh) sh.classList.add('collapsed');
-    if (chev) chev.textContent = '展开 ▴';
+    if (chev) chev.innerHTML = chevronLabel(true);
     setTimeout(function () { if (map) map.invalidateSize(); }, 280);
   }
   function renderChips(container, onPick) {
@@ -773,24 +856,24 @@
       var from = state.user ? 'from=' + state.user.lng + ',' + state.user.lat + ',' + encodeURIComponent('我的位置') + '&' : '';
       return 'https://uri.amap.com/navigation?' + from + 'to=' + s.lng + ',' + s.lat + ',' + encodeURIComponent(s.name) + '&mode=' + mode + '&policy=0&src=qingfengxunji&coordinate=gaode&callnative=1';
     };
-    var phoneBtn = s.phone ? '<a href="tel:' + String(s.phone).split(/[、,，;；]/)[0].replace(/[^\d+]/g, '') + '"><span class="da-ic">☎</span>预约咨询</a>' : '';
+    var phoneBtn = s.phone ? '<a href="tel:' + String(s.phone).split(/[、,，;；]/)[0].replace(/[^\d+]/g, '') + '">' + ic('phone', 'ic-sm') + '预约咨询</a>' : '';
     var highlights = (s.highlights || []).map(function (h, i) {
       return '<div class="point"><span class="point-no">' + (i + 1) + '</span><span>' + esc(h) + '</span></div>';
     }).join('');
     var quote = s.quote ? '<div class="quote">“' + esc(s.quote) + '”</div>' : '';
 
     box.innerHTML =
-      '<div class="detail-hero" style="background:linear-gradient(150deg,' + color + ',' + color + 'd9 58%,#C09A56)">' +
+      '<div class="detail-hero" style="background:linear-gradient(150deg,' + color + ',' + color + 'd9 58%,#B08D57)">' +
         '<div class="detail-badges">' + badges + '</div>' +
         '<div class="detail-name">' + esc(s.name) + '</div>' +
         '<div class="detail-loc">' + esc(s.city + (s.district ? ' · ' + s.district : '')) + '</div>' +
         '<div class="detail-tags">' + tags + '</div>' +
       '</div>' +
       '<div class="detail-actions">' +
-        '<button id="dv-route"><span class="da-ic">➤</span>规划路线</button>' +
-        '<button id="dv-visited"><span class="da-ic">' + (visited ? '★' : '☆') + '</span>' + (visited ? '已循迹' : '标记循迹') + '</button>' +
+        '<button id="dv-route">' + ic('navigate', 'ic-sm') + '规划路线</button>' +
+        '<button id="dv-visited">' + ic('check', 'ic-sm' + (visited ? ' ic-on' : '')) + (visited ? '已循迹' : '标记循迹') + '</button>' +
         phoneBtn +
-        '<button id="dv-copy"><span class="da-ic">⧉</span>复制地址</button>' +
+        '<button id="dv-copy">' + ic('copy', 'ic-sm') + '复制地址</button>' +
       '</div>' +
       '<div class="detail-body">' +
         '<div class="sec-title">点位简介</div>' +
@@ -971,7 +1054,7 @@
       var l = $('#legend');
       var open = l.hidden;
       l.hidden = !open;
-      $('#legend-label').textContent = open ? '要素图例 ▴' : '要素图例 ▾';
+      $('#legend-label').innerHTML = '要素图例 ' + ic(open ? 'up' : 'down', 'ic-sm');
     };
     /* 点位计数开关（市州 / 区县） */
     var btnCounts = $('#btn-counts');
@@ -979,10 +1062,13 @@
       btnCounts.onclick = function () {
         state.counts = !state.counts;
         btnCounts.classList.toggle('on', state.counts);
-        $('#counts-label').textContent = state.counts ? '📍 点位计数 ✓' : '📍 点位计数 ✕';
+        $('#counts-label').innerHTML = ic('pin', 'ic-sm') + '点位计数 ' + (state.counts ? '✓' : '✕');
         renderCounts();
       };
     }
+    /* 初始就把两个开关的图标画出来（不依赖用户是否点过） */
+    $('#legend-label').innerHTML = '要素图例 ' + ic('down', 'ic-sm');
+    $('#counts-label').innerHTML = ic('pin', 'ic-sm') + '点位计数 ' + (state.counts ? '✓' : '✕');
     /* 底部面板收起 / 展开，便于看全四川 */
     var sheetToggle = $('#sheet-toggle');
     if (sheetToggle) {
@@ -990,7 +1076,7 @@
         var s = $('#sheet');
         var collapsed = s.classList.toggle('collapsed');
         var chev = $('#sheet-chevron');
-        if (chev) chev.textContent = collapsed ? '展开 ▴' : '收起 ▾';
+        if (chev) chev.innerHTML = chevronLabel(collapsed);
         setTimeout(function () { if (map) map.invalidateSize(); }, 280);
       };
     }
@@ -1010,6 +1096,7 @@
         renderList();
       };
     });
+    paintIcons();
     parseHash();
   });
 })();

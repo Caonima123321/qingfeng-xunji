@@ -5,10 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="theme-color" content="#96232E" />
   <meta name="description" content="清风循迹 · 四川省廉洁文化地图：梳理四川 21 个市州 92 处廉洁文化场馆与场所，提供可视化地图、分类检索与研学路线规划。" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="清风循迹" />
   <meta name="format-detection" content="telephone=no" />
   <meta property="og:title" content="清风循迹 · 四川省廉洁文化地图" />
   <meta property="og:description" content="21 个市州 · 92 处廉洁文化点位 · 5 大廉洁要素，一图循迹，清风可感。" />
@@ -16,7 +12,7 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2396232E'/%3E%3Crect x='6' y='6' width='52' height='52' rx='10' fill='none' stroke='%23C09A56' stroke-width='2'/%3E%3Ctext x='32' y='46' font-size='36' font-family='Songti SC,SimSun,serif' fill='%23E0C68E' text-anchor='middle'%3E%E5%BB%89%3C/text%3E%3C/svg%3E" />
   <title>清风循迹 · 四川省廉洁文化地图</title>
   <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
-  <link rel="stylesheet" href="css/style.css?v=14" />
+  <link rel="stylesheet" href="css/style.css?v=17" />
 </head>
 <body>
   <div id="app">
@@ -36,7 +32,7 @@
         </span>
       </div>
       <div class="navbar">
-        <button class="nav-back" id="nav-back" hidden>‹</button>
+        <button class="nav-back" id="nav-back" hidden><span data-icon="left"></span></button>
         <span class="nav-title" id="nav-title">四川省 · 廉洁文化地图</span>
       </div>
     </div>
@@ -54,17 +50,17 @@
         <div id="map"></div>
 
         <div class="map-top">
-          <button class="searchbox" id="go-search">🔍 搜索场馆 / 市州 / 廉洁要素</button>
+          <button class="searchbox" id="go-search"><span data-icon="search"></span>搜索场馆 / 市州 / 廉洁要素</button>
           <div class="fabs">
-            <button class="fab" id="btn-locate"><span class="fab-ic">◎</span><span class="fab-tx">定位</span></button>
-            <button class="fab fab-home" id="btn-home"><span class="fab-ic">🏠</span><span class="fab-tx">家乡</span></button>
-            <button class="fab fab-route" id="btn-routes"><span class="fab-ic">🧭</span><span class="fab-tx">路线</span></button>
+            <button class="fab" id="btn-locate"><span class="fab-ic" data-icon="locate"></span><span class="fab-tx">定位</span></button>
+            <button class="fab fab-home" id="btn-home"><span class="fab-ic" data-icon="home"></span><span class="fab-tx">家乡</span></button>
+            <button class="fab fab-route" id="btn-routes"><span class="fab-ic" data-icon="compass"></span><span class="fab-tx">路线</span></button>
           </div>
         </div>
 
         <div class="chips" id="chips"></div>
         <button class="legend-toggle" id="btn-legend"><span id="legend-label">要素图例 ▾</span></button>
-        <button class="count-toggle on" id="btn-counts"><span id="counts-label">📍 点位计数 ✓</span></button>
+        <button class="count-toggle on" id="btn-counts"><span id="counts-label">点位计数 ✓</span></button>
         <div class="legend" id="legend" hidden></div>
 
         <div class="sheet" id="sheet">
@@ -138,15 +134,15 @@
 
     <!-- ============ 底部 Tab 栏 ============ -->
     <nav class="tabbar" id="tabbar">
-      <button data-view="map" class="on"><span class="tb-ic">🗺</span>廉图</button>
-      <button data-view="list"><span class="tb-ic">📋</span>廉迹</button>
-      <button data-view="about"><span class="tb-ic">📖</span>循迹</button>
+      <button data-view="map" class="on"><span class="tb-ic" data-icon="map"></span>廉图</button>
+      <button data-view="list"><span class="tb-ic" data-icon="list"></span>廉迹</button>
+      <button data-view="about"><span class="tb-ic" data-icon="route"></span>循迹</button>
     </nav>
 
   </div>
 
-  <script src="js/data.js?v=14"></script>
+  <script src="js/data.js?v=17"></script>
   <script src="vendor/leaflet/leaflet.js"></script>
-  <script src="js/app.js?v=14"></script>
+  <script src="js/app.js?v=17"></script>
 </body>
 </html>
